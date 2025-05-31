@@ -95,19 +95,6 @@ Para executar os testes:
 mvn test
 ```
 
-## 🤝 Contribuição
 
-1. Faça um Fork do projeto
-2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
-3. Adicione suas mudanças (`git add .`)
-4. Comite suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-5. Faça o Push da Branch (`git push origin feature/AmazingFeature`)
-6. Abra um Pull Request
-
-## ✉️ Contato
-
-Equipe de Desenvolvimento - contato@boltenergy.com
-
----
 
 Desenvolvido com ❤️ pela Equipe Bolt Energy
