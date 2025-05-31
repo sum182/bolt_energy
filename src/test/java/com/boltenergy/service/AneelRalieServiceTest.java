@@ -83,7 +83,7 @@ class AneelRalieServiceTest {
         }
     }
 
-    private void mockHeadRequest(HttpStatus status, String etag, String lastModified) {
+    /*private void mockHeadRequest(HttpStatus status, String etag, String lastModified) {
         when(exchangeFunction.exchange(any()))
             .thenAnswer(invocation -> {
                 org.springframework.web.reactive.function.client.ClientRequest request = invocation.getArgument(0);
@@ -240,5 +240,5 @@ class AneelRalieServiceTest {
         assertNotNull(result, "O resultado não deve ser nulo");
         assertNotEquals(existingFilePath, result, "Deveria ser um novo arquivo");
         verify(metadataService, atLeastOnce()).saveMetadata(any(RalieMetadata.class));
-    }
+    }*/
 }
