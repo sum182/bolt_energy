@@ -1,37 +1,43 @@
-# Bolt Energy Application
+# Bolt Energy API
 
-Aplicação Spring Boot para o projeto Bolt Energy.
+API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 
 ## 🚀 Tecnologias
 
 - Java 21
 - Spring Boot 3.2.0
-- Maven
+- Spring Web
 - Lombok
-- JUnit 5
-- Mockito
-- SLF4J para logging
+- SpringDoc OpenAPI (Documentação)
+- JUnit 5 (Testes)
+- Mockito (Mocks para testes)
+- SLF4J (Logging)
 
 ## 📋 Pré-requisitos
 
 - Java 21 ou superior
-- Maven 3.9+ (recomendado)
+- Maven 3.9+
 - Git (opcional, para controle de versão)
 
 ## 🔧 Instalação e Execução
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/bolt-energy-app.git
-   cd bolt-energy-app
+   git clone https://github.com/sum182/bolt_energy.git
+   cd bolt-energy
    ```
 
-2. Execute a aplicação com Maven:
+2. Construa o projeto:
+   ```bash
+   mvn clean install
+   ```
+
+3. Execute a aplicação:
    ```bash
    mvn spring-boot:run
    ```
 
-3. Acesse a aplicação em: [http://localhost:8080/api/hello](http://localhost:8080/api/hello)
+4. Acesse a aplicação em: [http://localhost:8080/api/hello](http://localhost:8080/api/hello)
 
 ## 🛠️ Comandos Úteis
 
@@ -57,25 +63,41 @@ Aplicação Spring Boot para o projeto Bolt Energy.
 
 ## 🌐 Endpoints da API
 
-- `GET /api/hello` - Retorna uma mensagem de boas-vindas
+### Hello World
+- **GET** `/api/hello`
+  - Retorna uma mensagem de boas-vindas
+  
+  Exemplo de resposta:
+  ```
+  Bem-vindo à API da Bolt Energy!
+  ```
 
 ## 📊 Documentação da API
 
-A documentação da API está disponível através do Swagger UI:
-- [Swagger UI](http://localhost:8080/api/swagger-ui.html)
-- [OpenAPI JSON](http://localhost:8080/api/v3/api-docs)
+A documentação interativa da API está disponível através do Swagger UI:
+- [Swagger UI](http://localhost:8080/swagger-ui.html)
+- [OpenAPI JSON](http://localhost:8080/v3/api-docs)
 
 ## 🧪 Testes
 
-Para executar os testes unitários:
+Para executar os testes:
 ```bash
 mvn test
 ```
 
 ## 🤝 Contribuição
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e enviar pull requests.
+1. Faça um Fork do projeto
+2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
+3. Adicione suas mudanças (`git add .`)
+4. Comite suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+5. Faça o Push da Branch (`git push origin feature/AmazingFeature`)
+6. Abra um Pull Request
 
 ## ✉️ Contato
 
-Para mais informações, entre em contato com a equipe de desenvolvimento.
+Equipe de Desenvolvimento - contato@boltenergy.com
+
+---
+
+Desenvolvido com ❤️ pela Equipe Bolt Energy
