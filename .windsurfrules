@@ -18,3 +18,8 @@
 # Test
 - Use JUnit 5 para testes unitários.
 - Use Mockito para mocks em testes unitários.
+
+
+# Controllers
+- Após alterações atualizar a documentação do Swagger.
+- Após alterações atualizar README.md
