@@ -5,14 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.boltenergy.config.RalieSchedulingProperties;
 import com.boltenergy.config.WebClientProperties;
 
 /**
  * Classe principal da aplicação Bolt Energy
  */
 @SpringBootApplication
-@EnableConfigurationProperties(WebClientProperties.class)
+@EnableScheduling
+@EnableConfigurationProperties({WebClientProperties.class, RalieSchedulingProperties.class})
 public class App {
     
     private static final Logger logger = LoggerFactory.getLogger(App.class);
