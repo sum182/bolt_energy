@@ -7,11 +7,38 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 - Java 21
 - Spring Boot 3.2.0
 - Spring Web
+- Spring WebFlux (para WebClient reativo)
 - Lombok
 - SpringDoc OpenAPI (Documentação)
 - JUnit 5 (Testes)
 - Mockito (Mocks para testes)
 - SLF4J (Logging)
+- Reactor (Programação reativa)
+
+## 🏗️ Estrutura do Projeto
+
+```
+src/
+├── main/
+│   ├── java/com/boltenergy/
+│   │   ├── config/           # Configurações da aplicação
+│   │   │   └── WebClientConfig.java  # Configuração central do WebClient
+│   │   │   └── SwaggerConfig.java    # Configuração do Swagger/OpenAPI
+│   │   ├── controller/       # Controladores da API
+│   │   │   └── TestController.java   # Endpoints de teste
+│   │   ├── exception/        # Tratamento de exceções
+│   │   ├── service/          # Lógica de negócios
+│   │   │   ├── GoogleService.java    # Serviço para integração com Google
+│   │   │   └── HttpService.java      # Serviço genérico HTTP
+│   │   └── App.java          # Classe principal
+│   └── resources/
+│       ├── application.yml    # Configurações da aplicação
+│       └── logback-spring.xml # Configuração de logs
+└── test/                     # Testes unitários e de integração
+    └── java/com/boltenergy/
+        └── controller/
+            └── TestControllerTest.java
+```
 
 ## 📋 Pré-requisitos
 
@@ -72,19 +99,22 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
   Bem-vindo ao endpoint de teste da Bolt Energy!
   ```
 
-- **GET** `/api/test/google-homepage`
-  - Retorna o HTML da página inicial do Google (para fins de teste)
+- **GET** `/api/test/google`
+  - Retorna o HTML da página inicial do Google (chamada síncrona)
+
   
   Exemplo de resposta:
   ```html
   <!doctype html>...</html>
   ```
 
-### Hello World
-- **GET** `/api/hello`
-  - Retorna uma mensagem de boas-vindas
+- **GET** `/api/test/google/async`
+  - Retorna o HTML da página inicial do Google (chamada assíncrona)
+  - Retorna um `Mono<String>`
   
   Exemplo de resposta:
+  ```html
+  <!doctype html>...</html>
   ```
   Bem-vindo à API da Bolt Energy!
   ```
