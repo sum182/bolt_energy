@@ -3,6 +3,7 @@ package com.boltenergy.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -13,6 +14,14 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<String> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        log.warn("Method not allowed: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body("Method not allowed: " + ex.getMethod());
+    }
 
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<String> handleWebClientResponseException(WebClientResponseException ex) {

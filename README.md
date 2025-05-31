@@ -63,6 +63,23 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 
 ## 🌐 Endpoints da API
 
+### Test Endpoints
+- **GET** `/api/test/hello`
+  - Retorna uma mensagem de boas-vindas de teste
+  
+  Exemplo de resposta:
+  ```
+  Bem-vindo ao endpoint de teste da Bolt Energy!
+  ```
+
+- **GET** `/api/test/google-homepage`
+  - Retorna o HTML da página inicial do Google (para fins de teste)
+  
+  Exemplo de resposta:
+  ```html
+  <!doctype html>...</html>
+  ```
+
 ### Hello World
 - **GET** `/api/hello`
   - Retorna uma mensagem de boas-vindas
