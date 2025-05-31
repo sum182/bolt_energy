@@ -8,6 +8,7 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 - Spring Boot 3.2.0
 - Spring Web
 - Spring WebFlux (para WebClient reativo)
+- Spring Data JPA (para acesso a dados)
 - Spring Scheduler (para agendamento de tarefas)
 - Lombok
 - SpringDoc OpenAPI (Documentação)
@@ -15,6 +16,48 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 - Mockito (Mocks para testes)
 - SLF4J (Logging)
 - Reactor (Programação reativa)
+- MySQL 8.0.21 (Banco de dados)
+
+## 🐳 Configuração do Banco de Dados
+
+O projeto utiliza o MySQL 8.0.21 em um container Docker. Siga os passos abaixo para configurar:
+
+1. **Pré-requisitos**
+   - Docker e Docker Compose instalados na sua máquina
+
+2. **Iniciar o container do MySQL**
+   ```bash
+   docker-compose up -d
+   ```
+   Isso irá:
+   - Baixar a imagem do MySQL 8.0.21 (se ainda não existir)
+   - Criar um container chamado `bolt_energy_mysql`
+   - Mapear a porta 3306 do container para a porta 3306 da sua máquina
+   - Criar um volume chamado `mysql_data` para persistência dos dados
+
+3. **Configurações de acesso**
+   - Host: localhost
+   - Porta: 3306
+   - Banco de dados: bolt_energy_db (será criado automaticamente)
+   - Usuário: root
+   - Senha: root
+
+4. **Comportamento de inicialização**
+   - O banco de dados é criado automaticamente na primeira execução
+   - As tabelas são criadas/atualizadas automaticamente pelo Hibernate/JPA
+   - O fuso horário está configurado para America/Sao_Paulo
+   - O conjunto de caracteres é UTF-8 (utf8mb4)
+   - O healthcheck verifica se o MySQL está respondendo
+
+4. **Verificar se o container está em execução**
+   ```bash
+   docker ps
+   ```
+
+5. **Parar o container (quando necessário)**
+   ```bash
+   docker-compose down
+   ```
 
 ## 🏗️ Estrutura do Projeto
 
