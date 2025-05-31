@@ -33,9 +33,17 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class AneelRalieService {
 
-    private static final String ANEEL_BASE_URL = "https://dadosabertos.aneel.gov.br";
+//    private static final String ANEEL_BASE_URL = "https://dadosabertos.aneel.gov.br";
     // URL direta para o arquivo CSV do RALIE (atualizada para o recurso correto)
-    private static final String RALIE_CSV_URL = "https://dadosabertos.aneel.gov.br/dataset/57e4b8b5-a5db-40e6-9901-27ca629d0477/resource/4a615df8-4c25-48fa-bbea-873a36a79518/download/ralie-usina.csv";
+
+    //    private static final String RALIE_CSV_URL = "https://dadosabertos.aneel.gov.br/dataset/57e4b8b5-a5db-40e6-9901-27ca629d0477/resource/4a615df8-4c25-48fa-bbea-873a36a79518/download/ralie-usina.csv";
+
+    private static final String ANEEL_BASE_URL = "https://github.com";
+    private static final String RALIE_CSV_URL = "https://raw.githubusercontent.com/sum182/bolt_energy/refs/heads/main/src/main/resources/examples/ralie-usina-example-simple.csv";
+
+
+
+
 
     private static final String DOWNLOAD_DIR = "downloads";
     
