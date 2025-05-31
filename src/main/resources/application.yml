@@ -5,7 +5,7 @@ spring:
   
 # Configuração do servidor
 server:
-  port: 8080
+  port: 8182
 
 # Configuração de logging
 logging:

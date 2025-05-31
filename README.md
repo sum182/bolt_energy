@@ -37,7 +37,7 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
    mvn spring-boot:run
    ```
 
-4. Acesse a aplicação em: [http://localhost:8080/api/hello](http://localhost:8080/api/hello)
+4. Acesse a aplicação em: [http://localhost:8182/api/hello](http://localhost:8182/api/hello)
 
 ## 🛠️ Comandos Úteis
 
@@ -75,8 +75,8 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 ## 📊 Documentação da API
 
 A documentação interativa da API está disponível através do Swagger UI:
-- [Swagger UI](http://localhost:8080/swagger-ui.html)
-- [OpenAPI JSON](http://localhost:8080/v3/api-docs)
+- [Swagger UI](http://localhost:8182/swagger-ui.html)
+- [OpenAPI JSON](http://localhost:8182/v3/api-docs)
 
 ## 🧪 Testes
 
