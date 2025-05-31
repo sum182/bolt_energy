@@ -90,6 +90,12 @@ src/
 
 ## 🌐 Endpoints da API
 
+### RALIE Usina Endpoints
+
+- **GET** `/api/ralie-usina/download-csv`
+  - Faz o download do arquivo CSV mais recente do Relatório de Acompanhamento da Expansão da Oferta de Geração de Energia Elétrica (RALIE) da ANEEL
+  - Retorna o arquivo CSV para download
+
 ### Test Endpoints
 - **GET** `/api/test/hello`
   - Retorna uma mensagem de boas-vindas de teste

@@ -31,6 +31,14 @@ public class GlobalExceptionHandler {
                 .body("Error from external service: " + ex.getStatusText());
     }
 
+    @ExceptionHandler(RalieDownloadException.class)
+    public ResponseEntity<String> handleRalieDownloadException(RalieDownloadException ex) {
+        log.error("Erro ao processar o download do arquivo RALIE: {}", ex.getMessage(), ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erro ao processar o download do arquivo RALIE: " + ex.getMessage());
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException(Exception ex) {
         log.error("Unexpected error: ", ex);

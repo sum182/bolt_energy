@@ -25,8 +25,10 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebClientConfig {
 
-    public static final int DEFAULT_TIMEOUT_SECONDS = 10;
-    public static final int MAX_IN_MEMORY_SIZE = 16 * 1024 * 1024; // 16MB
+    // Timeout padrão aumentado para 5 minutos (300 segundos)
+    public static final int DEFAULT_TIMEOUT_SECONDS = 300;
+    // Tamanho máximo em memória aumentado para 50MB
+    public static final int MAX_IN_MEMORY_SIZE = 50 * 1024 * 1024; // 50MB
 
     /**
      * Creates a generic WebClient builder with default configurations.
@@ -84,11 +86,17 @@ public class WebClientConfig {
 
     private HttpClient createHttpClient(int timeoutInSeconds) {
         return HttpClient.create()
+                // Configurações de buffer
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofSeconds(timeoutInSeconds).toMillis())
                 .responseTimeout(Duration.ofSeconds(timeoutInSeconds))
+                // Aumenta o tamanho dos buffers
+                .option(ChannelOption.SO_RCVBUF, 1024 * 1024) // 1MB
+                .option(ChannelOption.SO_SNDBUF, 1024 * 1024) // 1MB
                 .doOnConnected(conn ->
                         conn.addHandlerLast(new ReadTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS))
-                           .addHandlerLast(new WriteTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS)));
+                           .addHandlerLast(new WriteTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS)))
+                // Habilita compressão
+                .compress(true);
     }
 
     private ExchangeFilterFunction logRequest() {
