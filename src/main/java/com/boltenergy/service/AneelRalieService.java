@@ -198,10 +198,10 @@ public class AneelRalieService {
                 
                 long fileSize = Files.size(targetPath);
                 double duration = (System.currentTimeMillis() - startTime) / 1000.0;
-                double speed = fileSize / (1024.0 * 1024.0) / duration; // MB/s
                 
-                log.info("Download concluído em {:.2f}s - Tamanho: {:.2f}MB - Velocidade média: {:.2f}MB/s", 
-                        duration, fileSize / (1024.0 * 1024.0), speed);
+                log.info("Download concluído em {}s - Tamanho: {}MB", 
+                        String.format("%.2f", duration), 
+                        String.format("%.2f", fileSize / (1024.0 * 1024.0)));
                 
             } catch (Exception e) {
                 // Tenta excluir o arquivo temporário em caso de erro

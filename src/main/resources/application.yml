@@ -44,6 +44,14 @@ management:
   server:
     port: 8182  # Mesma porta da aplicação
 
+# Configurações do WebClient
+webclient:
+  max-in-memory-size: 50MB
+  connect-timeout: 300s  # 5 minutos para conexão
+  response-timeout: 300s  # 5 minutos para resposta
+  read-timeout: 600s     # 10 minutos para leitura total
+  buffer-size: 1MB
+
 # Configurações de banco de dados (exemplo com H2 em memória)
 #spring:
 #  datasource:

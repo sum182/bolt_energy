@@ -3,6 +3,7 @@ package com.boltenergy.config;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,12 +24,14 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class WebClientConfig {
 
-    // Timeout padrão aumentado para 5 minutos (300 segundos)
-    public static final int DEFAULT_TIMEOUT_SECONDS = 300;
-    // Tamanho máximo em memória aumentado para 50MB
-    public static final int MAX_IN_MEMORY_SIZE = 50 * 1024 * 1024; // 50MB
+    private final WebClientProperties properties;
+
+//    // Timeout padrão aumentado para 5 minutos (300 segundos)
+//    // Timeout padrão em segundos
+//    private static final int DEFAULT_TIMEOUT_SECONDS = 300; // 5 minutos
 
     /**
      * Creates a generic WebClient builder with default configurations.
@@ -38,7 +41,7 @@ public class WebClientConfig {
      */
     @Bean
     public WebClient.Builder webClientBuilder() {
-        HttpClient httpClient = createHttpClient(DEFAULT_TIMEOUT_SECONDS);
+        HttpClient httpClient = createHttpClient(properties.getConnectTimeout().toSeconds());
         
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
@@ -48,7 +51,7 @@ public class WebClientConfig {
                 .filter(logResponse())
                 .codecs(configurer -> configurer
                         .defaultCodecs()
-                        .maxInMemorySize(MAX_IN_MEMORY_SIZE));
+                        .maxInMemorySize((int) properties.getMaxInMemorySize().toBytes()));
     }
 
     /**
@@ -58,7 +61,7 @@ public class WebClientConfig {
      * @return Configured WebClient
      */
     public WebClient createWebClient(String baseUrl) {
-        return createWebClient(baseUrl, DEFAULT_TIMEOUT_SECONDS);
+        return createWebClient(baseUrl, properties.getConnectTimeout().toSeconds());
     }
 
     /**
@@ -68,7 +71,7 @@ public class WebClientConfig {
      * @param timeoutInSeconds timeout in seconds
      * @return Configured WebClient
      */
-    public WebClient createWebClient(String baseUrl, int timeoutInSeconds) {
+    public WebClient createWebClient(String baseUrl, long timeoutInSeconds) {
         HttpClient httpClient = createHttpClient(timeoutInSeconds);
         
         return WebClient.builder()
@@ -80,20 +83,20 @@ public class WebClientConfig {
                 .filter(logResponse())
                 .codecs(configurer -> configurer
                         .defaultCodecs()
-                        .maxInMemorySize(MAX_IN_MEMORY_SIZE))
+                        .maxInMemorySize((int) properties.getMaxInMemorySize().toBytes()))
                 .build();
     }
 
-    private HttpClient createHttpClient(int timeoutInSeconds) {
+    private HttpClient createHttpClient(long timeoutInSeconds) {
         return HttpClient.create()
                 // Configurações de buffer
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofSeconds(timeoutInSeconds).toMillis())
                 .responseTimeout(Duration.ofSeconds(timeoutInSeconds))
                 // Aumenta o tamanho dos buffers
-                .option(ChannelOption.SO_RCVBUF, 1024 * 1024) // 1MB
-                .option(ChannelOption.SO_SNDBUF, 1024 * 1024) // 1MB
+                .option(ChannelOption.SO_RCVBUF, (int) properties.getBufferSize().toBytes())
+                .option(ChannelOption.SO_SNDBUF, (int) properties.getBufferSize().toBytes())
                 .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS))
+                        conn.addHandlerLast(new ReadTimeoutHandler(properties.getReadTimeout().toSeconds(), TimeUnit.SECONDS))
                            .addHandlerLast(new WriteTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS)))
                 // Habilita compressão
                 .compress(true);

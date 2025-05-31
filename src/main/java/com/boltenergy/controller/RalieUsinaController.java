@@ -44,39 +44,20 @@ public class RalieUsinaController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Arquivo CSV baixado com sucesso",
-        content = @Content(mediaType = "text/csv")
+        description = "Arquivo CSV baixado com sucesso"
     )
     @ApiResponse(
         responseCode = "500",
         description = "Erro ao processar a requisição"
     )
-    public ResponseEntity<FileSystemResource> downloadRalieCsv() {
+    public ResponseEntity<String> downloadRalieCsv() {
         log.info("Recebida requisição para download do arquivo RALIE");
         
         // Download the CSV file
         String filePath = aneelRalieService.downloadRalieCsv();
-        File file = new File(filePath);
         
-        if (!file.exists()) {
-            log.error("Arquivo não encontrado após o download: {}", filePath);
-            return ResponseEntity.notFound().build();
-        }
+        log.info("Arquivo RALIE salvo com sucesso: {}", filePath);
         
-        // Set up response headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        
-        log.info("Arquivo RALIE disponibilizado para download: {}", filePath);
-        
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(file.length())
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(new FileSystemResource(file));
+        return ResponseEntity.ok("Arquivo RALIE disponível em: " + filePath);
     }
 }
