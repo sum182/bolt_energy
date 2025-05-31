@@ -19,33 +19,76 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Configuration class for WebClient.
+ * Provides a generic WebClient builder with common configurations.
  */
 @Slf4j
 @Configuration
 public class WebClientConfig {
 
-    private static final int TIMEOUT_SECONDS = 10;
+    public static final int DEFAULT_TIMEOUT_SECONDS = 10;
+    public static final int MAX_IN_MEMORY_SIZE = 16 * 1024 * 1024; // 16MB
 
+    /**
+     * Creates a generic WebClient builder with default configurations.
+     * The base URL should be set when using the builder.
+     *
+     * @return Configured WebClient.Builder
+     */
     @Bean
-    public WebClient webClient(WebClient.Builder builder) {
-        HttpClient httpClient = HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofSeconds(TIMEOUT_SECONDS).toMillis())
-                .responseTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-                .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-                           .addHandlerLast(new WriteTimeoutHandler(TIMEOUT_SECONDS, TimeUnit.SECONDS)));
-
-        return builder
-                .baseUrl("https://www.google.com")
+    public WebClient.Builder webClientBuilder() {
+        HttpClient httpClient = createHttpClient(DEFAULT_TIMEOUT_SECONDS);
+        
+        return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .defaultHeader(HttpHeaders.USER_AGENT, "BoltEnergyApp/1.0")
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE)
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .filter(logRequest())
                 .filter(logResponse())
                 .codecs(configurer -> configurer
                         .defaultCodecs()
-                        .maxInMemorySize(16 * 1024 * 1024)) // 16MB
+                        .maxInMemorySize(MAX_IN_MEMORY_SIZE));
+    }
+
+    /**
+     * Creates a WebClient with a specific base URL.
+     *
+     * @param baseUrl the base URL for the WebClient
+     * @return Configured WebClient
+     */
+    public WebClient createWebClient(String baseUrl) {
+        return createWebClient(baseUrl, DEFAULT_TIMEOUT_SECONDS);
+    }
+
+    /**
+     * Creates a WebClient with a specific base URL and timeout.
+     *
+     * @param baseUrl the base URL for the WebClient
+     * @param timeoutInSeconds timeout in seconds
+     * @return Configured WebClient
+     */
+    public WebClient createWebClient(String baseUrl, int timeoutInSeconds) {
+        HttpClient httpClient = createHttpClient(timeoutInSeconds);
+        
+        return WebClient.builder()
+                .baseUrl(baseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .defaultHeader(HttpHeaders.USER_AGENT, "BoltEnergyApp/1.0")
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .filter(logRequest())
+                .filter(logResponse())
+                .codecs(configurer -> configurer
+                        .defaultCodecs()
+                        .maxInMemorySize(MAX_IN_MEMORY_SIZE))
                 .build();
+    }
+
+    private HttpClient createHttpClient(int timeoutInSeconds) {
+        return HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofSeconds(timeoutInSeconds).toMillis())
+                .responseTimeout(Duration.ofSeconds(timeoutInSeconds))
+                .doOnConnected(conn ->
+                        conn.addHandlerLast(new ReadTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS))
+                           .addHandlerLast(new WriteTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS)));
     }
 
     private ExchangeFilterFunction logRequest() {

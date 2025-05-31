@@ -1,50 +1,76 @@
 package com.boltenergy.service;
 
+import com.boltenergy.config.WebClientConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 
 /**
  * Service for interacting with Google services.
+ * Uses a generically configured WebClient.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleService {
 
-    private final WebClient webClient;
+    private static final String GOOGLE_BASE_URL = "https://www.google.com";
+    
+    private final WebClientConfig webClientConfig;
+    private WebClient webClient;
+    
+    @PostConstruct
+    public void init() {
+        this.webClient = webClientConfig.createWebClient(GOOGLE_BASE_URL)
+                .mutate()
+                .defaultHeader("Accept", MediaType.TEXT_HTML_VALUE)
+                .build();
+    }
 
     /**
-     * Fetches the Google homepage.
-     *
-     * @return A Mono containing the HTML content of the Google homepage
+     * Busca a página inicial do Google.
+     * 
+     * @return String com o HTML da página inicial do Google
+     * @throws RuntimeException em caso de erro na requisição
      */
-    public Mono<String> fetchGoogleHomepage() {
-        log.info("Fetching Google homepage");
+    public String fetchGoogleHomepage() {
+        try {
+            log.info("Buscando página inicial do Google...");
+            
+            return webClient.get()
+                    .uri("/")
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .timeout(Duration.ofSeconds(WebClientConfig.DEFAULT_TIMEOUT_SECONDS))
+                    .block();
+                    
+        } catch (Exception e) {
+            log.error("Erro ao buscar página do Google: {}", e.getMessage());
+            throw new RuntimeException("Falha ao acessar o Google: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Fetches the Google homepage asynchronously.
+     * This method is not currently in use but is available for future async operations.
+     *
+     * @return Mono containing the HTML content of the Google homepage
+     */
+    public Mono<String> fetchGoogleHomepageAsync() {
+        log.info("Starting async fetch of Google homepage");
         
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/").build())
+                .uri("/")
                 .retrieve()
-                .onStatus(
-                    status -> status.isError(),
-                    response -> {
-                        String errorMessage = String.format(
-                            "Failed to fetch Google homepage. Status: %s",
-                            response.statusCode()
-                        );
-                        log.error(errorMessage);
-                        return Mono.error(new RuntimeException(errorMessage));
-                    }
-                )
                 .bodyToMono(String.class)
-                .timeout(Duration.ofSeconds(10))
-                .doOnSuccess(response -> log.info("Successfully fetched Google homepage"))
-                .doOnError(error -> log.error("Error fetching Google homepage: {}", error.getMessage()));
+                .timeout(Duration.ofSeconds(WebClientConfig.DEFAULT_TIMEOUT_SECONDS))
+                .doOnSuccess(html -> log.info("Successfully fetched Google homepage asynchronously"))
+                .doOnError(error -> log.error("Error fetching Google homepage asynchronously: {}", error.getMessage()));
     }
 }

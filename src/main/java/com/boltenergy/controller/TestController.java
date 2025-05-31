@@ -11,20 +11,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 /**
- * Controller para testes da API da Bolt Energy.
- * Fornece endpoints para teste e validação da API.
+ * Controller for Bolt Energy API tests.
+ * Provides endpoints for API testing and validation.
  */
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/test")
+@RequiredArgsConstructor
 @Tag(
     name = "Test Controller",
-    description = "Endpoints para teste e validação da API"
+    description = "Endpoints for API testing and validation"
 )
 public class TestController {
 
@@ -59,33 +61,61 @@ public class TestController {
     }
 
     /**
-     * Endpoint para buscar a página inicial do Google (para teste).
-     * Retorna o HTML da página inicial do Google.
+     * Endpoint síncrono para buscar a página inicial do Google.
+     * Retorna o HTML da página inicial do Google de forma síncrona.
      *
      * @return ResponseEntity com o conteúdo HTML da página do Google
      */
-    @GetMapping(value = "/google-homepage", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/google", produces = MediaType.TEXT_HTML_VALUE)
     @Operation(
-        summary = "[Teste] Busca a página inicial do Google",
+        summary = "[Teste] Busca da página inicial do Google",
         description = "Endpoint de teste que retorna o HTML da página inicial do Google"
     )
-    public Mono<ResponseEntity<String>> getGoogleHomepage() {
-        log.info("[TEST] Received request to fetch Google homepage from test endpoint");
+    public ResponseEntity<String> getGoogleHomepage() {
+        log.info("Recebida requisição para buscar página do Google");
         
-        return googleService.fetchGoogleHomepage()
+        try {
+            String html = googleService.fetchGoogleHomepage();
+            log.info("Página do Google obtida com sucesso");
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_HTML)
+                    .body(html);
+        } catch (Exception e) {
+            log.error("Erro ao buscar página do Google: {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body("Erro ao acessar o Google: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Endpoint assíncrono para buscar a página inicial do Google.
+     * Retorna o HTML da página inicial do Google de forma não-bloqueante.
+     *
+     * @return Mono com o ResponseEntity contendo o HTML da página do Google
+     */
+    @GetMapping(value = "/google/async", produces = MediaType.TEXT_HTML_VALUE)
+    @Operation(
+        summary = "[Teste] Busca assíncrona da página inicial do Google",
+        description = "Endpoint de teste que retorna o HTML da página inicial do Google de forma assíncrona"
+    )
+    public Mono<ResponseEntity<String>> getGoogleHomepageAsync() {
+        log.info("Recebida requisição assíncrona para buscar página do Google");
+        
+        return googleService.fetchGoogleHomepageAsync()
                 .map(html -> {
-                    log.info("[TEST] Successfully returning Google homepage");
+                    log.info("Página do Google obtida com sucesso (assíncrono)");
                     return ResponseEntity.ok()
                             .contentType(MediaType.TEXT_HTML)
                             .body(html);
                 })
                 .onErrorResume(e -> {
-                    log.error("[TEST] Error fetching Google homepage: {}", e.getMessage());
-                    String errorMessage = "[TEST] Erro ao acessar o Google: " + e.getMessage();
+                    log.error("Erro ao buscar página do Google (assíncrono): {}", e.getMessage());
                     return Mono.just(ResponseEntity
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .contentType(MediaType.TEXT_PLAIN)
-                            .body(errorMessage));
+                            .body("Erro ao acessar o Google: " + e.getMessage()));
                 });
     }
 }
