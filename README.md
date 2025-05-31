@@ -8,6 +8,7 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 - Spring Boot 3.2.0
 - Spring Web
 - Spring WebFlux (para WebClient reativo)
+- Spring Scheduler (para agendamento de tarefas)
 - Lombok
 - SpringDoc OpenAPI (Documentação)
 - JUnit 5 (Testes)
@@ -25,7 +26,9 @@ src/
 │   │   │   ├── AppConfig.java        # Configurações gerais da aplicação
 │   │   │   ├── SwaggerConfig.java    # Configuração do Swagger/OpenAPI
 │   │   │   ├── WebClientConfig.java  # Configuração central do WebClient
-│   │   │   └── WebClientProperties.java # Propriedades do WebClient
+│   │   │   └── WebClientProperties.java  # Propriedades do WebClient
+│   │   │   ├── RalieSchedulingProperties.java # Propriedades de agendamento
+│   │   │   └── SchedulingConfig.java    # Configuração de agendamento
 │   │   │
 │   │   ├── controller/            # Controladores da API
 │   │   │   ├── RalieUsinaController.java  # Endpoints para dados RALIE
@@ -40,6 +43,8 @@ src/
 │   │   │
 │   │   ├── service/               # Lógica de negócios
 │   │   │   ├── AneelRalieService.java   # Serviço para integração com dados da ANEEL
+│   │   │   ├── scheduler/            # Agendadores de tarefas
+│   │   │   │   └── RalieDownloadScheduler.java # Agendador de downloads RALIE
 │   │   │   ├── GoogleService.java    # Serviço para integração com Google
 │   │   │   ├── HttpService.java      # Serviço genérico HTTP
 │   │   │   └── RalieMetadataService.java # Gerenciamento de metadados
@@ -230,6 +235,40 @@ curl --head \
 #### Como Usar no Código
 
 A aplicação já implementa essa verificação automaticamente. O serviço `AneelRalieService` verifica se o arquivo foi modificado antes de fazer o download completo, usando os cabeçalhos `ETag` e `Last-Modified`.
+
+## ⏰ Agendamento Automático
+
+O sistema possui um agendador automático que pode ser configurado para baixar periodicamente o arquivo RALIE da ANEEL.
+
+### Configuração
+
+As configurações de agendamento podem ser ajustadas no arquivo `application.yml`:
+
+```yaml
+ralie:
+  schedule:
+    # Expressão cron para agendamento (padrão: a cada hora)
+    # Exemplos:
+    # 0 * * * * *   - A cada minuto
+    # 0 */5 * * * * - A cada 5 minutos
+    # 0 0 * * * *   - A cada hora (no minuto 0)
+    # 0 0 */2 * * * - A cada 2 horas
+    cron: 0 0 * * * *
+    
+    # Habilita/desabilita o agendamento automático
+    enabled: true
+    
+    # Nome do job para logs
+    job-name: "RALIE Download Job"
+```
+
+### Como Funciona
+
+- O agendador verifica periodicamente se há uma nova versão do arquivo RALIE disponível
+- Se uma nova versão for encontrada, o download é realizado automaticamente
+- O histórico de downloads é mantido no arquivo de metadados
+- O agendamento pode ser habilitado/desabilitado conforme necessário
+
 
 ### 📊 Monitoramento
 
