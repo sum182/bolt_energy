@@ -1,0 +1,20 @@
+# Java Windsurf Rules - Bolt Energy
+
+
+# Documentação
+- Utilize Reame.md para documentar o projeto.
+
+# Dependências
+- Use o Maven para gerenciar as dependências do projeto.
+- Use Spring Boot Web Application
+- Use Lombok para reduzir o boilerplate de código.
+- Use SLF4J para logging.
+
+
+# Code Style
+- Use o padrão de nomenclatura Java (camelCase para variáveis e métodos, PascalCase para classes).
+- Use Google Java Style Guide como referência para formatação de código.
+
+# Test
+- Use JUnit 5 para testes unitários.
+- Use Mockito para mocks em testes unitários.

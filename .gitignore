@@ -1,16 +1,8 @@
-# Compiled class file
+### Java ###
 *.class
-
-# Log file
 *.log
-
-# BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
@@ -18,7 +10,79 @@
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.idea_modules/
+
+### VS Code ###
+.vscode/
+
+### Eclipse ###
+.settings/
+.classpath
+.project
+
+### Spring Boot ###
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Application properties ###
+**/application*.properties
+**/application*.yaml
+**/application*.yml
+
+### Logs ###
+logs/
+*.log
+
+### System Files ###
+.DS_Store
+Thumbs.db
+
+### IDE specific files ###
+*.swp
+*~
+*.swo
+
+### Local development environment files ###
+.env
+.env.local
+
+### Build directories ###
+build/
+bin/
+
+### Test reports ###
+**/surefire-reports/
+**/failsafe-reports/
+**/test-results/
+**/test-reports/
+
+### Dependency directories ###
+**/lib/
+**/libs/
+
+### Executable files ###
+*.exe
+*.bat
+*.sh
+*.cmd
