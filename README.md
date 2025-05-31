@@ -96,45 +96,6 @@ src/
   - Faz o download do arquivo CSV mais recente do Relatório de Acompanhamento da Expansão da Oferta de Geração de Energia Elétrica (RALIE) da ANEEL
   - Retorna o arquivo CSV para download
 
-### Verificando Modificações no Arquivo CSV
-
-Para verificar se o arquivo CSV foi modificado sem baixar o conteúdo completo, você pode fazer uma requisição HEAD para a URL do arquivo. Isso é útil para verificar se há atualizações disponíveis.
-
-#### Requisição HEAD
-
-```bash
-curl --head \
---header 'User-Agent: Mozilla/5.0' \
-'https://dadosabertos.aneel.gov.br/dataset/57e4b8b5-a5db-40e6-9901-27ca629d0477/resource/4a615df8-4c25-48fa-bbea-873a36a79518/download/ralie-usina.csv'
-```
-
-#### Cabeçalhos Importantes na Resposta
-
-- **ETag**: Identificador único da versão do arquivo
-- **Last-Modified**: Data e hora da última modificação
-- **Content-Length**: Tamanho do arquivo em bytes
-
-#### Verificando Modificações com Condicionais
-
-Você pode usar os cabeçalhos condicionais para verificar se o arquivo foi modificado desde a última vez que você o baixou:
-
-```bash
-curl --head \
---header 'If-None-Match: "seu_etag_aqui"' \
---header 'If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT' \
---header 'User-Agent: Mozilla/5.0' \
-'https://dadosabertos.aneel.gov.br/dataset/57e4b8b5-a5db-40e6-9901-27ca629d0477/resource/4a615df8-4c25-48fa-bbea-873a36a79518/download/ralie-usina.csv'
-```
-
-**Respostas possíveis:**
-- **200 OK**: O arquivo foi modificado (novos cabeçalhos serão retornados)
-- **304 Not Modified**: O arquivo não foi modificado desde a data/etag fornecida
-- **412 Precondition Failed**: As condições fornecidas não foram atendidas
-
-#### Como Usar no Código
-
-A aplicação já implementa essa verificação automaticamente. O serviço `AneelRalieService` verifica se o arquivo foi modificado antes de fazer o download completo, usando os cabeçalhos `ETag` e `Last-Modified`.
-
 
 ### Test Endpoints
 - **GET** `/api/test/hello`
@@ -204,6 +165,45 @@ webclient:
   read-timeout: 600s     # 10 minutos para leitura total
   buffer-size: 1MB
 ```
+
+### Verificando Modificações no Arquivo CSV
+
+Para verificar se o arquivo CSV foi modificado sem baixar o conteúdo completo, você pode fazer uma requisição HEAD para a URL do arquivo. Isso é útil para verificar se há atualizações disponíveis.
+
+#### Requisição HEAD
+
+```bash
+curl --head \
+--header 'User-Agent: Mozilla/5.0' \
+'https://dadosabertos.aneel.gov.br/dataset/57e4b8b5-a5db-40e6-9901-27ca629d0477/resource/4a615df8-4c25-48fa-bbea-873a36a79518/download/ralie-usina.csv'
+```
+
+#### Cabeçalhos Importantes na Resposta
+
+- **ETag**: Identificador único da versão do arquivo
+- **Last-Modified**: Data e hora da última modificação
+- **Content-Length**: Tamanho do arquivo em bytes
+
+#### Verificando Modificações com Condicionais
+
+Você pode usar os cabeçalhos condicionais para verificar se o arquivo foi modificado desde a última vez que você o baixou:
+
+```bash
+curl --head \
+--header 'If-None-Match: "seu_etag_aqui"' \
+--header 'If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT' \
+--header 'User-Agent: Mozilla/5.0' \
+'https://dadosabertos.aneel.gov.br/dataset/57e4b8b5-a5db-40e6-9901-27ca629d0477/resource/4a615df8-4c25-48fa-bbea-873a36a79518/download/ralie-usina.csv'
+```
+
+**Respostas possíveis:**
+- **200 OK**: O arquivo foi modificado (novos cabeçalhos serão retornados)
+- **304 Not Modified**: O arquivo não foi modificado desde a data/etag fornecida
+- **412 Precondition Failed**: As condições fornecidas não foram atendidas
+
+#### Como Usar no Código
+
+A aplicação já implementa essa verificação automaticamente. O serviço `AneelRalieService` verifica se o arquivo foi modificado antes de fazer o download completo, usando os cabeçalhos `ETag` e `Last-Modified`.
 
 ### 📊 Monitoramento
 

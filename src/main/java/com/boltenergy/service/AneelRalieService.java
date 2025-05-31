@@ -70,24 +70,32 @@ public class AneelRalieService {
         try {
             // Obtém o diretório raiz da aplicação
             this.appBasePath = Paths.get("").toAbsolutePath();
+            log.info("Diretório raiz da aplicação: {}", this.appBasePath);
             
             // Cria o diretório de downloads se não existir
             this.downloadPath = appBasePath.resolve(DOWNLOAD_DIR);
-            if (!this.downloadPath.toFile().exists()) {
+            if (!Files.exists(this.downloadPath)) {
                 Files.createDirectories(this.downloadPath);
                 log.info("Diretório de downloads criado em: {}", this.downloadPath);
+            } else {
+                log.info("Usando diretório de downloads existente: {}", this.downloadPath);
             }
             
-            // Inicializa o serviço de metadados e carrega os dados existentes
-            // Usamos null como basePath pois o serviço agora gerencia seu próprio caminho
-            metadataService.init(null);
+            // Verifica permissão de escrita
+            if (!Files.isWritable(this.downloadPath)) {
+                throw new IOException("Sem permissão de escrita no diretório: " + this.downloadPath);
+            }
+            
+            // Inicializa o serviço de metadados no diretório de downloads
+            metadataService.init(this.downloadPath);
             this.metadata = metadataService.loadMetadata();
             log.info("Metadados carregados. Último download em: {}", 
                     metadata.getFormattedLastDownloadTime());
+            log.info("Arquivo de metadados: {}", this.downloadPath.resolve("ralie_metadata.json"));
                     
         } catch (IOException e) {
-            log.error("Erro ao configurar o diretório de downloads", e);
-            throw new RalieDownloadException("Falha ao configurar o diretório de downloads", e);
+            log.error("Erro ao configurar o diretório de downloads: {}", e.getMessage(), e);
+            throw new RalieDownloadException("Falha ao configurar o diretório de downloads: " + e.getMessage(), e);
         }
     }
     

@@ -25,25 +25,29 @@ public class RalieMetadataService {
     
     /**
      * Initializes the metadata service.
-     * @param basePath Base path for storing metadata file (not used, kept for backward compatibility)
+     * @param basePath Base path for storing metadata file (typically the downloads directory)
      */
     public void init(Path basePath) {
         try {
-            // Get the project root directory
-            String projectRoot = System.getProperty("user.dir");
-            Path resourcesPath = Paths.get(projectRoot, "src", "main", "resources");
-            
-            // Create the resources directory if it doesn't exist
-            if (!Files.exists(resourcesPath)) {
-                Files.createDirectories(resourcesPath);
+            // Use the provided basePath (downloads directory)
+            if (basePath == null) {
+                throw new IllegalArgumentException("Base path cannot be null");
             }
             
-            this.metadataPath = resourcesPath.resolve(METADATA_FILENAME);
+            // Ensure the downloads directory exists
+            if (!Files.exists(basePath)) {
+                Files.createDirectories(basePath);
+            }
+            
+            this.metadataPath = basePath.resolve(METADATA_FILENAME);
             log.info("Metadata file will be stored at: {}", metadataPath);
             
             // Ensure the file exists
             if (!Files.exists(metadataPath)) {
                 saveMetadata(new RalieMetadata());
+            } else {
+                // Just try to read to ensure the file is accessible
+                loadMetadata();
             }
         } catch (Exception e) {
             log.error("Failed to initialize metadata path: {}", e.getMessage(), e);
@@ -55,17 +59,22 @@ public class RalieMetadataService {
      * Loads metadata from file or creates a new instance if not found.
      */
     public RalieMetadata loadMetadata() {
-        if (metadataPath == null || !Files.exists(metadataPath)) {
-            log.info("No existing metadata found, creating new instance");
+        if (metadataPath == null) {
+            log.warn("Metadata path not initialized, returning new metadata instance");
             return new RalieMetadata();
         }
         
-        try {
-            RalieMetadata metadata = objectMapper.readValue(metadataPath.toFile(), RalieMetadata.class);
-            log.info("Loaded metadata from: {}", metadataPath);
+        if (!Files.exists(metadataPath)) {
+            log.info("No existing metadata file found at: {}, creating new instance", metadataPath);
+            return new RalieMetadata();
+        }
+        
+        try (var reader = Files.newBufferedReader(metadataPath)) {
+            RalieMetadata metadata = objectMapper.readValue(reader, RalieMetadata.class);
+            log.info("Successfully loaded metadata from: {}", metadataPath);
             return metadata;
         } catch (IOException e) {
-            log.warn("Failed to load metadata from {}: {}", metadataPath, e.getMessage());
+            log.error("Failed to load metadata from {}: {}", metadataPath, e.getMessage(), e);
             return new RalieMetadata();
         }
     }
@@ -83,16 +92,11 @@ public class RalieMetadataService {
             // Ensure parent directory exists
             Files.createDirectories(metadataPath.getParent());
             
-            // Write to a temp file first, then rename for atomicity
-            Path tempFile = Files.createTempFile(metadataPath.getParent(), "ralie_metadata", ".tmp");
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile.toFile(), metadata);
-            
-            // Replace the old file atomically
-            Files.move(tempFile, metadataPath, 
-                     java.nio.file.StandardCopyOption.REPLACE_EXISTING,
-                     java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-            
-            log.debug("Metadata saved to: {}", metadataPath);
+            // Write directly to the target file using try-with-resources to ensure proper resource cleanup
+            try (var writer = Files.newBufferedWriter(metadataPath)) {
+                objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, metadata);
+                log.debug("Metadata saved successfully to: {}", metadataPath);
+            }
         } catch (IOException e) {
             log.error("Failed to save metadata to {}: {}", metadataPath, e.getMessage(), e);
         }
