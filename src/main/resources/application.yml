@@ -1,0 +1,45 @@
+# Configurações da aplicação
+spring:
+  application:
+    name: bolt-energy-app
+  
+# Configuração do servidor
+server:
+  port: 8080
+
+# Configuração de logging
+logging:
+  level:
+    root: INFO
+    com.boltenergy: DEBUG
+  file:
+    name: logs/application.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Configuração do Swagger/OpenAPI (opcional)
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+
+# Configurações de banco de dados (exemplo com H2 em memória)
+#spring:
+#  datasource:
+#    url: jdbc:h2:mem:testdb
+#    driver-class-name: org.h2.Driver
+#    username: sa
+#    password: password
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
+#  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true

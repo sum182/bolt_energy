@@ -46,9 +46,10 @@ out/
 !**/src/test/**/target/
 
 ### Application properties ###
-**/application*.properties
-**/application*.yaml
-**/application*.yml
+# Permite apenas os arquivos de configuração padrão do Spring Boot
+!src/main/resources/application*.properties
+!src/main/resources/application*.yaml
+!src/main/resources/application*.yml
 
 ### Logs ###
 logs/

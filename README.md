@@ -1,35 +1,81 @@
-# Bolt Energy App
+# Bolt Energy Application
 
-Aplicação Java 21 de exemplo para o projeto Bolt Energy.
+Aplicação Spring Boot para o projeto Bolt Energy.
 
-## Requisitos
+## 🚀 Tecnologias
+
+- Java 21
+- Spring Boot 3.2.0
+- Maven
+- Lombok
+- JUnit 5
+- Mockito
+- SLF4J para logging
+
+## 📋 Pré-requisitos
 
 - Java 21 ou superior
 - Maven 3.9+ (recomendado)
+- Git (opcional, para controle de versão)
 
-## Como executar
+## 🔧 Instalação e Execução
 
-1. Clone o repositório
-2. Navegue até o diretório do projeto
-3. Execute o comando:
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/bolt-energy-app.git
+   cd bolt-energy-app
    ```
-   mvn clean compile exec:java -Dexec.mainClass="com.boltenergy.App"
+
+2. Execute a aplicação com Maven:
+   ```bash
+   mvn spring-boot:run
    ```
 
-## Estrutura do Projeto
+3. Acesse a aplicação em: [http://localhost:8080/api/hello](http://localhost:8080/api/hello)
 
+## 🛠️ Comandos Úteis
+
+- Executar a aplicação:
+  ```bash
+  mvn spring-boot:run
+  ```
+
+- Executar testes:
+  ```bash
+  mvn test
+  ```
+
+- Construir o projeto:
+  ```bash
+  mvn clean package
+  ```
+
+- Executar a aplicação a partir do JAR gerado:
+  ```bash
+  java -jar target/bolt-energy-app-1.0.0-SNAPSHOT.jar
+  ```
+
+## 🌐 Endpoints da API
+
+- `GET /api/hello` - Retorna uma mensagem de boas-vindas
+
+## 📊 Documentação da API
+
+A documentação da API está disponível através do Swagger UI:
+- [Swagger UI](http://localhost:8080/api/swagger-ui.html)
+- [OpenAPI JSON](http://localhost:8080/api/v3/api-docs)
+
+## 🧪 Testes
+
+Para executar os testes unitários:
+```bash
+mvn test
 ```
-src/
-  main/
-    java/
-      com/
-        boltenergy/
-          App.java         # Classe principal
-  test/
-    java/           # Testes unitários (a implementar)
-  resources/       # Arquivos de recursos (a implementar)
-```
 
-## Licença
+## 🤝 Contribuição
 
-Este projeto está sob a licença MIT.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e enviar pull requests.
+
+## ✉️ Contato
+
+Para mais informações, entre em contato com a equipe de desenvolvimento.
