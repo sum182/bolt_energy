@@ -21,23 +21,49 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 src/
 ├── main/
 │   ├── java/com/boltenergy/
-│   │   ├── config/           # Configurações da aplicação
-│   │   │   └── WebClientConfig.java  # Configuração central do WebClient
-│   │   │   └── SwaggerConfig.java    # Configuração do Swagger/OpenAPI
-│   │   ├── controller/       # Controladores da API
+│   │   ├── config/                  # Configurações da aplicação
+│   │   │   ├── AppConfig.java        # Configurações gerais da aplicação
+│   │   │   ├── SwaggerConfig.java    # Configuração do Swagger/OpenAPI
+│   │   │   ├── WebClientConfig.java  # Configuração central do WebClient
+│   │   │   └── WebClientProperties.java # Propriedades do WebClient
+│   │   │
+│   │   ├── controller/            # Controladores da API
+│   │   │   ├── RalieUsinaController.java  # Endpoints para dados RALIE
 │   │   │   └── TestController.java   # Endpoints de teste
-│   │   ├── exception/        # Tratamento de exceções
-│   │   ├── service/          # Lógica de negócios
+│   │   │
+│   │   ├── exception/             # Tratamento de exceções
+│   │   │   ├── GlobalExceptionHandler.java # Tratamento global de exceções
+│   │   │   └── RalieDownloadException.java # Exceção específica para falhas no download
+│   │   │
+│   │   ├── model/                 # Modelos de dados
+│   │   │   └── RalieMetadata.java    # Metadados para controle de downloads
+│   │   │
+│   │   ├── service/               # Lógica de negócios
+│   │   │   ├── AneelRalieService.java   # Serviço para integração com dados da ANEEL
 │   │   │   ├── GoogleService.java    # Serviço para integração com Google
-│   │   │   └── HttpService.java      # Serviço genérico HTTP
-│   │   └── App.java          # Classe principal
-│   └── resources/
-│       ├── application.yml    # Configurações da aplicação
-│       └── logback-spring.xml # Configuração de logs
-└── test/                     # Testes unitários e de integração
+│   │   │   ├── HttpService.java      # Serviço genérico HTTP
+│   │   │   └── RalieMetadataService.java # Gerenciamento de metadados
+│   │   │
+│   │   └── App.java          # Classe principal da aplicação
+│   │
+│   └── resources/                 # Recursos da aplicação
+│       ├── application.yml           # Configurações da aplicação
+│       └── examples/                 # Exemplos de arquivos
+│           └── ralie-usina-example-simple.csv  # Exemplo de arquivo RALIE
+│
+└── test/                           # Testes unitários e de integração
     └── java/com/boltenergy/
-        └── controller/
-            └── TestControllerTest.java
+        ├── controller/                # Testes dos controladores
+        │   ├── RalieUsinaControllerTest.java
+        │   └── TestControllerTest.java
+        └── service/                   # Testes dos serviços
+            └── AneelRalieServiceTest.java
+
+# Diretórios gerados em tempo de execução
+/downloads/                     # Arquivos baixados (criado em tempo de execução)
+  └── ralie_metadata.json       # Metadados dos downloads (criado em tempo de execução)
+logs/                           # Arquivos de log (criado em tempo de execução)
+  └── application.log           # Logs da aplicação
 ```
 
 ## 📋 Pré-requisitos
@@ -166,7 +192,7 @@ webclient:
   buffer-size: 1MB
 ```
 
-### Verificando Modificações no Arquivo CSV
+### ✅ Verificando Modificações no Arquivo CSV
 
 Para verificar se o arquivo CSV foi modificado sem baixar o conteúdo completo, você pode fazer uma requisição HEAD para a URL do arquivo. Isso é útil para verificar se há atualizações disponíveis.
 
