@@ -30,6 +30,20 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
+# Configuração do Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,mappings
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+  server:
+    port: 8182  # Mesma porta da aplicação
+
 # Configurações de banco de dados (exemplo com H2 em memória)
 #spring:
 #  datasource:

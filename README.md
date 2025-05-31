@@ -72,11 +72,21 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
   Bem-vindo à API da Bolt Energy!
   ```
 
-## 📊 Documentação da API
+## 📊 Documentação e Monitoramento
 
+### Documentação da API
 A documentação interativa da API está disponível através do Swagger UI:
 - [Swagger UI](http://localhost:8182/swagger-ui.html)
 - [OpenAPI JSON](http://localhost:8182/v3/api-docs)
+
+### Spring Boot Actuator
+Endpoints de monitoramento e gerenciamento:
+- [Health Check](http://localhost:8182/actuator/health) - Status de saúde da aplicação
+- [Metrics](http://localhost:8182/actuator/metrics) - Métricas da aplicação
+- [Environment](http://localhost:8182/actuator/env) - Variáveis de ambiente
+- [Mappings](http://localhost:8182/actuator/mappings) - Mapeamentos de endpoints
+- [Beans](http://localhost:8182/actuator/beans) - Beans do Spring
+- [Info](http://localhost:8182/actuator/info) - Informações da aplicação
 
 ## 🧪 Testes
 
