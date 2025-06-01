@@ -76,8 +76,17 @@ public class RalieUsinaCsvImportService {
         }
     }
     
+    @Transactional(readOnly = true)
+    public long count() {
+        return repository.count();
+    }
+    
     @Transactional
     public void importCsv(String csvContent) throws IOException {
+        if (csvContent == null || csvContent.trim().isEmpty()) {
+            throw new IllegalArgumentException("O conteúdo do CSV não pode ser nulo ou vazio");
+        }
+        
         deleteAll();
         String fixedContent = fixEncoding(csvContent);
         log.info("Iniciando importação do CSV para a tabela de importação");
@@ -92,20 +101,30 @@ public class RalieUsinaCsvImportService {
                     .setTrim(true)
                     .build())) {
             
+            // Verifica se o CSV tem cabeçalhos
+            if (parser.getHeaderMap().isEmpty()) {
+                throw new IllegalArgumentException("O arquivo CSV não contém cabeçalhos válidos");
+            }
+            
             int batchSize = 10000;
             int count = 0;
             List<RalieUsinaCsvImportEntity> batchImport = new ArrayList<>(batchSize);
             
             for (CSVRecord record : parser) {
-                RalieUsinaCsvImportEntity entity = new RalieUsinaCsvImportEntity();
-                mapRecordToEntity(record, entity);
-                batchImport.add(entity);
-                count++;
-                
-                if (batchImport.size() >= batchSize) {
-                    repository.saveAllAndFlush(batchImport);
-                    batchImport.clear();
-                    log.info("Registros processados: {}", count);
+                try {
+                    RalieUsinaCsvImportEntity entity = new RalieUsinaCsvImportEntity();
+                    mapRecordToEntity(record, entity);
+                    batchImport.add(entity);
+                    count++;
+                    
+                    if (batchImport.size() >= batchSize) {
+                        repository.saveAllAndFlush(batchImport);
+                        batchImport.clear();
+                        log.info("Registros processados: {}", count);
+                    }
+                } catch (Exception e) {
+                    throw new IOException("Erro ao processar a linha " + record.getRecordNumber() + 
+                                       " do CSV: " + e.getMessage(), e);
                 }
             }
             
@@ -114,6 +133,10 @@ public class RalieUsinaCsvImportService {
             }
             
             log.info("Importação concluída. Total de registros importados: {}", count);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Erro ao processar o arquivo CSV: " + e.getMessage(), e);
         }
     }
     
@@ -205,16 +228,14 @@ public class RalieUsinaCsvImportService {
     }
     
     private void setIfExists(CSVRecord record, String column, java.util.function.Consumer<String> setter) {
-        try {
-            if (record.isSet(column)) {
-                String value = record.get(column);
-                if (value != null && !value.trim().isEmpty()) {
-                    String fixedValue = fixEncoding(value);
-                    setter.accept(fixedValue);
-                }
+        if (record.isSet(column)) {
+            String value = record.get(column);
+            if (value != null && !value.trim().isEmpty()) {
+                String fixedValue = fixEncoding(value);
+                setter.accept(fixedValue);
             }
-        } catch (Exception e) {
-            log.warn("Erro ao processar coluna '{}': {}", column, e.getMessage());
+        } else if (record.size() > 0) {
+            throw new IllegalArgumentException("Coluna não encontrada no registro: " + column);
         }
     }
     

@@ -211,34 +211,7 @@ logs/                           # Arquivos de log (criado em tempo de execução
 
 
 
-### Test Endpoints
-- **GET** `/api/test/hello`
-  - Retorna uma mensagem de boas-vindas de teste
-  
-  Exemplo de resposta:
-  ```
-  Bem-vindo ao endpoint de teste da Bolt Energy!
-  ```
 
-- **GET** `/api/test/google`
-  - Retorna o HTML da página inicial do Google (chamada síncrona)
-
-  
-  Exemplo de resposta:
-  ```html
-  <!doctype html>...</html>
-  ```
-
-- **GET** `/api/test/google/async`
-  - Retorna o HTML da página inicial do Google (chamada assíncrona)
-  - Retorna um `Mono<String>`
-  
-  Exemplo de resposta:
-  ```html
-  <!doctype html>...</html>
-  ```
-  Bem-vindo à API da Bolt Energy!
-  ```
 
 ## 📊 Importação de Dados RALIE
 
