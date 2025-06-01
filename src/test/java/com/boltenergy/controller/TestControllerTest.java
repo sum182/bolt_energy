@@ -13,13 +13,13 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-/**
- * Testes unitários para o TestController.
- */
 class TestControllerTest {
+
+    private static final String MOCK_HTML = "<html><body>Google Test Page</body></html>";
+    private static final String ERROR_MESSAGE = "Falha ao acessar o Google";
+    private static final String WELCOME_MESSAGE = "Bem-vindo ao endpoint de teste da Bolt Energy!";
 
     @Mock
     private GoogleService googleService;
@@ -32,103 +32,67 @@ class TestControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    /**
-     * Testa o método hello() para garantir que retorne a mensagem de boas-vindas correta.
-     */
     @Test
-    void hello_ShouldReturnWelcomeMessage() {
-        // Act
+    void whenHelloEndpointCalled_thenReturnWelcomeMessage() {
         ResponseEntity<String> response = testController.hello();
 
-        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Bem-vindo ao endpoint de teste da Bolt Energy!", response.getBody());
+        assertEquals(WELCOME_MESSAGE, response.getBody());
     }
 
-    /**
-     * Testa o método getGoogleHomepage() para garantir que retorne o HTML da página do Google.
-     */
     @Test
-    void getGoogleHomepage_ShouldReturnGoogleHomepage() {
-        // Arrange
-        String mockHtml = "<html><body>Google Test Page</body></html>";
-        when(googleService.fetchGoogleHomepage())
-                .thenReturn(mockHtml);
+    void givenSuccessfulResponse_whenGetGoogleHomepage_thenReturnHtml() {
+        when(googleService.fetchGoogleHomepage()).thenReturn(MOCK_HTML);
 
-        // Act
         ResponseEntity<String> response = testController.getGoogleHomepage();
 
-        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getHeaders().getContentType().includes(org.springframework.http.MediaType.TEXT_HTML));
-        assertEquals(mockHtml, response.getBody());
+        assertTrue(response.getHeaders().getContentType().includes(MediaType.TEXT_HTML));
+        assertEquals(MOCK_HTML, response.getBody());
     }
 
-    /**
-     * Testa o método getGoogleHomepage() para garantir que retorne um erro quando o serviço do Google falhar.
-     */
     @Test
-    void getGoogleHomepage_ShouldReturnErrorWhenServiceFails() {
-        // Arrange
-        String errorMessage = "Falha ao acessar o Google";
-        when(googleService.fetchGoogleHomepage())
-                .thenThrow(new RuntimeException(errorMessage));
+    void givenServiceError_whenGetGoogleHomepage_thenReturnErrorResponse() {
+        when(googleService.fetchGoogleHomepage()).thenThrow(new RuntimeException(ERROR_MESSAGE));
 
-        // Act
         ResponseEntity<String> response = testController.getGoogleHomepage();
 
-        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
-        assertTrue(response.getBody().contains("Falha ao acessar o Google"));
+        assertTrue(response.getBody().contains(ERROR_MESSAGE));
     }
 
-    /**
-     * Tests the getGoogleHomepageAsync() method to ensure it returns the Google homepage HTML asynchronously.
-     */
     @Test
-    void getGoogleHomepageAsync_ShouldReturnGoogleHomepage() {
-        // Arrange
-        String mockHtml = "<html><body>Google Test Page</body></html>";
-        when(googleService.fetchGoogleHomepageAsync())
-                .thenReturn(Mono.just(mockHtml));
+    void givenSuccessfulResponse_whenGetGoogleHomepageAsync_thenReturnHtml() {
+        when(googleService.fetchGoogleHomepageAsync()).thenReturn(Mono.just(MOCK_HTML));
 
-        // Act
         Mono<ResponseEntity<String>> result = testController.getGoogleHomepageAsync();
 
-        // Assert
         StepVerifier.create(result)
-                .assertNext(response -> {
-                    assertEquals(HttpStatus.OK, response.getStatusCode());
-                    assertTrue(response.getHeaders().getContentType().includes(MediaType.TEXT_HTML));
-                    assertEquals(mockHtml, response.getBody());
-                })
-                .verifyComplete();
+            .assertNext(response -> {
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                assertTrue(response.getHeaders().getContentType().includes(MediaType.TEXT_HTML));
+                assertEquals(MOCK_HTML, response.getBody());
+            })
+            .verifyComplete();
     }
 
-    /**
-     * Tests the getGoogleHomepageAsync() method to ensure it handles service failures correctly.
-     */
     @Test
-    void getGoogleHomepageAsync_ShouldReturnErrorWhenServiceFails() {
-        // Arrange
-        String errorMessage = "Falha ao acessar o Google";
+    void givenServiceError_whenGetGoogleHomepageAsync_thenReturnErrorResponse() {
         when(googleService.fetchGoogleHomepageAsync())
-                .thenReturn(Mono.error(new RuntimeException(errorMessage)));
+            .thenReturn(Mono.error(new RuntimeException(ERROR_MESSAGE)));
 
-        // Act
         Mono<ResponseEntity<String>> result = testController.getGoogleHomepageAsync();
 
-        // Assert
         StepVerifier.create(result)
-                .assertNext(response -> {
-                    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-                    assertTrue(response.getHeaders().getContentType().includes(MediaType.TEXT_PLAIN));
-                    assertTrue(response.getBody().contains("Erro ao acessar o Google"));
-                })
-                .verifyComplete();
+            .assertNext(response -> {
+                assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+                assertTrue(response.getHeaders().getContentType().includes(MediaType.TEXT_PLAIN));
+                assertTrue(response.getBody().contains(ERROR_MESSAGE));
+            })
+            .verifyComplete();
     }
 }

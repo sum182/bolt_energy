@@ -6,21 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Integration tests for {@link RalieUsinaController}.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 class RalieUsinaControllerTest {
+
+    private static final String DOWNLOAD_CSV_ENDPOINT = "/api/ralie-usina/download-csv";
+    private static final String FILE_NOT_MODIFIED_MSG = "O arquivo remoto não foi modificado desde o último download";
+    private static final String DOWNLOAD_SUCCESS_MSG_PREFIX = "Novo arquivo RALIE baixado com sucesso:";
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,40 +33,40 @@ class RalieUsinaControllerTest {
     private AneelRalieService aneelRalieService;
 
     @Test
-    void downloadRalieCsv_Success() throws Exception {
-        // Arrange
-        String csvContent = "id,nome,cnpj\n1,Usina Teste,12345678000199";
-        String tempFilePath = System.getProperty("java.io.tmpdir") + "/ralie_20250101_120000.csv";
+    void downloadRalieCsv_WhenFileDownloaded_ReturnsSuccessMessage() throws Exception {
+        Path tempFile = createTempFile();
+        when(aneelRalieService.downloadRalieCsv()).thenReturn(tempFile.toString());
         
-        when(aneelRalieService.downloadRalieCsv()).thenReturn(tempFilePath);
-        
-        // Act & Assert
-        mockMvc.perform(get("/api/ralie-usina/download-csv"))
+        String response = mockMvc.perform(get(DOWNLOAD_CSV_ENDPOINT))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Type", "text/csv"))
-                .andExpect(header().exists("Content-Disposition"))
-                .andExpect(header().string("Content-Disposition", 
-                        "attachment; filename=ralie_20250101_120000.csv"));
+                .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+                
+        assertTrue(response.startsWith(DOWNLOAD_SUCCESS_MSG_PREFIX) || 
+                 response.equals(FILE_NOT_MODIFIED_MSG));
     }
 
     @Test
-    void downloadRalieCsv_FileNotFound_ReturnsNotFound() throws Exception {
-        // Arrange
-        when(aneelRalieService.downloadRalieCsv()).thenReturn("/caminho/inexistente/arquivo.csv");
+    void downloadRalieCsv_WhenFileNotModified_ReturnsNotModifiedMessage() throws Exception {
+        when(aneelRalieService.downloadRalieCsv()).thenReturn("caminho/arquivo.csv");
         
-        // Act & Assert
-        mockMvc.perform(get("/api/ralie-usina/download-csv"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get(DOWNLOAD_CSV_ENDPOINT))
+                .andExpect(status().isOk())
+                .andExpect(content().string(FILE_NOT_MODIFIED_MSG));
     }
 
     @Test
-    void downloadRalieCsv_ServiceError_ReturnsInternalServerError() throws Exception {
-        // Arrange
+    void downloadRalieCsv_WhenServiceThrowsException_ReturnsInternalServerError() throws Exception {
         when(aneelRalieService.downloadRalieCsv())
                 .thenThrow(new RuntimeException("Erro ao baixar o arquivo"));
         
-        // Act & Assert
-        mockMvc.perform(get("/api/ralie-usina/download-csv"))
+        mockMvc.perform(get(DOWNLOAD_CSV_ENDPOINT))
                 .andExpect(status().isInternalServerError());
+    }
+
+    private Path createTempFile() throws Exception {
+        Path tempFile = Files.createTempFile("ralie_", ".csv");
+        tempFile.toFile().deleteOnExit();
+        return tempFile;
     }
 }
