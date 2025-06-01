@@ -58,25 +58,25 @@ public class RalieUsinaController {
     
     @GetMapping("/maiores-geradores")
     @Operation(
-        summary = "Listar maiores geradores de energia",
-        description = "Retorna a lista de todos os empreendimentos com suas respectivas potências totais"
+        summary = "Listar os 5 maiores geradores de energia",
+        description = "Retorna os 5 empreendimentos com as maiores potências totais, ordenados de forma decrescente"
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Lista de maiores geradores retornada com sucesso",
+        description = "Lista dos 5 maiores geradores retornada com sucesso",
         content = @Content(
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = RalieUsinaEmpresaPotenciaGeradaDTO.class))
         )
     )
     public ResponseEntity<List<RalieUsinaEmpresaPotenciaGeradaDTO>> listarMaioresGeradores() {
-        log.info("Recebida requisição para listar os maiores geradores de energia");
+        log.info("Recebida requisição para listar os 5 maiores geradores de energia");
         
-        var geradores = potenciaGeradaService.findAll().stream()
+        var geradores = potenciaGeradaService.findTop5MaioresGeradores().stream()
             .map(RalieUsinaEmpresaPotenciaGeradaDTO::fromEntity)
             .collect(Collectors.toList());
             
-        log.info("Retornando {} maiores geradores de energia", geradores.size());
+        log.info("Retornando os 5 maiores geradores de energia");
         return ResponseEntity.ok(geradores);
     }
 }

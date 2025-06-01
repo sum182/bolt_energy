@@ -40,7 +40,9 @@ public class AneelRalieService {
 
     //urls de teste
     private static final String ANEEL_BASE_URL = "https://github.com";
-    private static final String RALIE_CSV_URL = "https://raw.githubusercontent.com/sum182/bolt_energy/refs/heads/main/src/main/resources/examples/ralie-usina-example-simple.csv";
+    //private static final String RALIE_CSV_URL = "https://raw.githubusercontent.com/sum182/bolt_energy/refs/heads/main/src/main/resources/examples/ralie-usina-example-simple.csv";
+    private static final String RALIE_CSV_URL = "https://raw.githubusercontent.com/sum182/bolt_energy/refs/heads/main/src/main/resources/examples/ralie-usina-example-simple-2.csv";
+
     private static final String DOWNLOAD_DIR = "downloads";
     
     private final WebClientConfig webClientConfig;

@@ -51,9 +51,6 @@ public class RalieUsinaEmpresaPotenciaGeradaService {
                 ? registro.getMdaPotenciaOutorgadaKw() 
                 : 0.0;
             
-            log.debug("Processando registro - CodCEG: '{}', Nome: '{}', Potência: {}", 
-                codCeg, nomeEmpreendimento, potencia);
-            
             empreendimentosMap.compute(codCeg, (key, existing) -> {
                 if (existing == null) {
                     return RalieUsinaEmpresaPotenciaGeradaEntity.builder()
@@ -63,8 +60,6 @@ public class RalieUsinaEmpresaPotenciaGeradaService {
                         .build();
                 } else {
                     existing.setPotencia(existing.getPotencia() + potencia);
-                    log.debug("Soma de potência para CodCEG {}: {} + {} = {}", 
-                        codCeg, (existing.getPotencia() - potencia), potencia, existing.getPotencia());
                     return existing;
                 }
             });
@@ -115,5 +110,11 @@ public class RalieUsinaEmpresaPotenciaGeradaService {
     @Transactional(readOnly = true)
     public boolean existsByCodCeg(String codCeg) {
         return repository.existsByCodCeg(codCeg);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<RalieUsinaEmpresaPotenciaGeradaEntity> findTop5MaioresGeradores() {
+        log.info("Buscando os 5 maiores geradores de energia");
+        return repository.findTop5ByOrderByPotenciaDesc();
     }
 }
