@@ -72,8 +72,8 @@ public class AneelRalieService {
                 throw new IOException("Sem permissão de escrita no diretório: " + this.downloadPath);
             }
             
-            metadataService.init(this.downloadPath);
-            this.metadata = metadataService.loadMetadata();
+            metadataService.init(downloadPath);
+            metadata = metadataService.loadMetadata();
             
             log.info("Metadados carregados. Último download em: {}", 
                     metadata.getFormattedLastDownloadTime());
@@ -91,7 +91,7 @@ public class AneelRalieService {
             String csvUrl = getCsvFileUrl();
             log.info("URL do arquivo CSV: {}", csvUrl);
             
-            this.metadata = metadataService.loadMetadata();
+            metadata = metadataService.loadMetadata();
             
             if (!hasRemoteFileChanged(csvUrl)) {
                 log.info("O arquivo remoto não foi modificado desde o último download");
@@ -195,7 +195,6 @@ public class AneelRalieService {
 
             metadata.update(etag, lastModified, filePath.toString(), fileSize);
             metadataService.saveMetadata(metadata);
-            this.metadata = metadataService.loadMetadata();
             
             log.info("Metadados atualizados com sucesso");
             
