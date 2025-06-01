@@ -1,6 +1,11 @@
 # Java Windsurf Rules - Bolt Energy
 
 
+# Padrões
+- Use Code Clean para manter o código limpo e legível.
+- Deixar o código simples e direto, evitando complexidade desnecessária, para que qualquer desenvolvedor consiga entender e manter o código facilmente.
+
+
 # Documentação
 - Utilize Reame.md para documentar o projeto.
 

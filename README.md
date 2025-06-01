@@ -20,7 +20,7 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 
 ## 🐳 Configuração do Banco de Dados
 
-O projeto utiliza o MySQL 8.0.21 em um container Docker. Siga os passos abaixo para configurar:
+O projeto utiliza o MySQL 8.0.21 em um container Docker para armazenar os metadados dos downloads. Siga os passos abaixo para configurar:
 
 1. **Pré-requisitos**
    - Docker e Docker Compose instalados na sua máquina
@@ -48,6 +48,7 @@ O projeto utiliza o MySQL 8.0.21 em um container Docker. Siga os passos abaixo p
    - O fuso horário está configurado para America/Sao_Paulo
    - O conjunto de caracteres é UTF-8 (utf8mb4)
    - O healthcheck verifica se o MySQL está respondendo
+   - Os metadados dos downloads são armazenados na tabela `ralie_metadata`
 
 4. **Verificar se o container está em execução**
    ```bash
@@ -82,7 +83,9 @@ src/
 │   │   │   └── RalieDownloadException.java # Exceção específica para falhas no download
 │   │   │
 │   │   ├── model/                 # Modelos de dados
-│   │   │   └── RalieMetadata.java    # Metadados para controle de downloads
+│   │   │   ├── RalieMetadata.java    # DTO para metadados de downloads
+│   │   │   └── entity/              # Entidades JPA
+│   │   │       └── RalieMetadataEntity.java # Entidade de metadados
 │   │   │
 │   │   ├── service/               # Lógica de negócios
 │   │   │   ├── AneelRalieService.java   # Serviço para integração com dados da ANEEL
@@ -90,7 +93,11 @@ src/
 │   │   │   │   └── RalieDownloadScheduler.java # Agendador de downloads RALIE
 │   │   │   ├── GoogleService.java    # Serviço para integração com Google
 │   │   │   ├── HttpService.java      # Serviço genérico HTTP
-│   │   │   └── RalieMetadataService.java # Gerenciamento de metadados
+│   │   │   ├── RalieMetadataService.java     # Interface para gerenciamento de metadados
+│   │   │   ├── FileRalieMetadataService.java # Implementação baseada em arquivo (legado)
+│   │   │   └── RalieMetadataDbService.java   # Implementação baseada em banco de dados
+│   │   │   └── repository/            # Repositórios JPA
+│   │   │       └── RalieMetadataRepository.java # Repositório para operações de metadados
 │   │   │
 │   │   └── App.java          # Classe principal da aplicação
 │   │
@@ -118,6 +125,7 @@ logs/                           # Arquivos de log (criado em tempo de execução
 
 - Java 21 ou superior
 - Maven 3.9+
+- Docker e Docker Compose (para o banco de dados MySQL)
 - Git (opcional, para controle de versão)
 
 ## 🔧 Instalação e Execução
@@ -138,7 +146,6 @@ logs/                           # Arquivos de log (criado em tempo de execução
    mvn spring-boot:run
    ```
 
-4. Acesse a aplicação em: [http://localhost:8182/api/hello](http://localhost:8182/api/hello)
 
 ## 🛠️ Comandos Úteis
 
