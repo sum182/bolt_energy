@@ -11,10 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Configuration properties for WebClient.
- * All time values are in seconds.
- */
 @Data
 @Slf4j
 @Validated

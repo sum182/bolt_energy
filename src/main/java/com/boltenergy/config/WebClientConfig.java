@@ -18,10 +18,6 @@ import reactor.netty.http.client.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Configuration class for WebClient.
- * Provides a generic WebClient builder with common configurations.
- */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -31,12 +27,6 @@ public class WebClientConfig {
 
 
 
-    /**
-     * Creates a generic WebClient builder with default configurations.
-     * The base URL should be set when using the builder.
-     *
-     * @return Configured WebClient.Builder
-     */
     @Bean
     public WebClient.Builder webClientBuilder() {
         HttpClient httpClient = createHttpClient(properties.getConnectTimeout().toSeconds());
@@ -52,23 +42,10 @@ public class WebClientConfig {
                         .maxInMemorySize((int) properties.getMaxInMemorySize().toBytes()));
     }
 
-    /**
-     * Creates a WebClient with a specific base URL.
-     *
-     * @param baseUrl the base URL for the WebClient
-     * @return Configured WebClient
-     */
     public WebClient createWebClient(String baseUrl) {
         return createWebClient(baseUrl, properties.getConnectTimeout().toSeconds());
     }
 
-    /**
-     * Creates a WebClient with a specific base URL and timeout.
-     *
-     * @param baseUrl the base URL for the WebClient
-     * @param timeoutInSeconds timeout in seconds
-     * @return Configured WebClient
-     */
     public WebClient createWebClient(String baseUrl, long timeoutInSeconds) {
         HttpClient httpClient = createHttpClient(timeoutInSeconds);
         

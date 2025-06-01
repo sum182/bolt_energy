@@ -13,10 +13,6 @@ import reactor.netty.http.client.HttpClient;
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 
-/**
- * Service for interacting with Google services.
- * Uses a generically configured WebClient.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,12 +35,6 @@ public class GoogleService {
                 .build();
     }
 
-    /**
-     * Busca a página inicial do Google.
-     * 
-     * @return String com o HTML da página inicial do Google
-     * @throws RuntimeException em caso de erro na requisição
-     */
     public String fetchGoogleHomepage() {
         try {
             log.info("Buscando página inicial do Google...");
@@ -62,12 +52,6 @@ public class GoogleService {
         }
     }
 
-    /**
-     * Fetches the Google homepage asynchronously.
-     * This method is not currently in use but is available for future async operations.
-     *
-     * @return Mono containing the HTML content of the Google homepage
-     */
     public Mono<String> fetchGoogleHomepageAsync() {
         log.info("Starting async fetch of Google homepage");
         

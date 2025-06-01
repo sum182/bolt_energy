@@ -16,10 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-/**
- * Controller for Bolt Energy API tests.
- * Provides endpoints for API testing and validation.
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/test")
@@ -32,11 +28,7 @@ public class TestController {
 
     private final GoogleService googleService;
 
-    /**
-     * Endpoint de teste que retorna uma mensagem de boas-vindas.
-     * 
-     * @return ResponseEntity com uma mensagem de boas-vindas
-     */
+
     @Operation(
         summary = "Retorna uma mensagem de boas-vindas de teste",
         description = "Endpoint de teste que retorna uma mensagem de boas-vindas da API",
@@ -60,12 +52,7 @@ public class TestController {
         return ResponseEntity.ok("Bem-vindo ao endpoint de teste da Bolt Energy!");
     }
 
-    /**
-     * Endpoint síncrono para buscar a página inicial do Google.
-     * Retorna o HTML da página inicial do Google de forma síncrona.
-     *
-     * @return ResponseEntity com o conteúdo HTML da página do Google
-     */
+
     @GetMapping(value = "/google", produces = MediaType.TEXT_HTML_VALUE)
     @Operation(
         summary = "[Teste] Busca da página inicial do Google",
@@ -89,12 +76,7 @@ public class TestController {
         }
     }
 
-    /**
-     * Endpoint assíncrono para buscar a página inicial do Google.
-     * Retorna o HTML da página inicial do Google de forma não-bloqueante.
-     *
-     * @return Mono com o ResponseEntity contendo o HTML da página do Google
-     */
+
     @GetMapping(value = "/google/async", produces = MediaType.TEXT_HTML_VALUE)
     @Operation(
         summary = "[Teste] Busca assíncrona da página inicial do Google",

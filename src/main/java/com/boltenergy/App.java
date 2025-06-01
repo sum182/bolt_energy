@@ -10,9 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.boltenergy.config.RalieSchedulingProperties;
 import com.boltenergy.config.WebClientProperties;
 
-/**
- * Classe principal da aplicação Bolt Energy
- */
 @SpringBootApplication
 @EnableScheduling
 @EnableConfigurationProperties({WebClientProperties.class, RalieSchedulingProperties.class})

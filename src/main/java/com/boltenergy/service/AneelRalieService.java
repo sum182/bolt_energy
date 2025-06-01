@@ -27,9 +27,6 @@ import java.util.Comparator;
 import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 
-/**
- * Service for downloading and processing RALIE data from ANEEL.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -87,11 +84,6 @@ public class AneelRalieService {
         }
     }
     
-    /**
-     * Downloads the RALIE CSV file only if it has changed since the last download.
-     * 
-     * @return Path to the downloaded file or the existing file if no changes
-     */
     public String downloadRalieCsv() {
         log.info("Iniciando verificação de atualizações do arquivo RALIE da ANEEL");
         
@@ -120,9 +112,6 @@ public class AneelRalieService {
         }
     }
     
-    /**
-     * Verifica se o arquivo remoto foi modificado desde o último download
-     */
     private boolean hasRemoteFileChanged(String fileUrl) {
         try {
             if (metadata.getEtag() == null && metadata.getLastModified() == null) {
@@ -170,9 +159,6 @@ public class AneelRalieService {
         }
     }
     
-    /**
-     * Baixa um novo arquivo e atualiza os metadados
-     */
     @Transactional(rollbackFor = Exception.class)
     private String downloadNewFile(String fileUrl) {
         try {
@@ -221,9 +207,6 @@ public class AneelRalieService {
         }
     }
     
-    /**
-     * Encontra o arquivo RALIE mais recente no diretório de downloads
-     */
     private Optional<Path> findLatestRalieFile() {
         try (var files = Files.list(downloadPath)
                 .filter(Files::isRegularFile)
