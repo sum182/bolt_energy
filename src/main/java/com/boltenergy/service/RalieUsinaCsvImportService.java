@@ -70,9 +70,21 @@ public class RalieUsinaCsvImportService {
     }
 
     @Transactional
+    public void deleteAll() {
+        log.info("Removendo todos os registros existentes da tabela de importação");
+        if (repository.count() > 0) {
+            repository.deleteAllInBatch();
+            log.info("Todos os registros foram removidos com sucesso");
+        } else {
+            log.info("Nenhum registro encontrado para remoção");
+        }
+    }
+    
+    @Transactional
     public void importCsv(String csvContent) throws IOException {
-        // Corrige a codificação do conteúdo antes de processar
+        deleteAll();
         String fixedContent = fixEncoding(csvContent);
+        log.info("Iniciando importação do CSV para a tabela de importação");
         
         try (CSVParser parser = new CSVParser(
                 new StringReader(fixedContent),
@@ -84,14 +96,19 @@ public class RalieUsinaCsvImportService {
                     .setTrim(true)
                     .build())) {
             
+            int count = 0;
             for (CSVRecord record : parser) {
                 RalieUsinaCsvImportEntity entity = new RalieUsinaCsvImportEntity();
-                
-                // Mapear os campos do CSV para a entidade
                 mapRecordToEntity(record, entity);
-                
                 repository.save(entity);
+                count++;
+                
+                if (count % 1000 == 0) {
+                    log.info("Registros processados: {}", count);
+                }
             }
+            
+            log.info("Importação concluída. Total de registros importados: {}", count);
         }
     }
     
