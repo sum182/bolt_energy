@@ -17,6 +17,7 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 - SLF4J (Logging)
 - Reactor (Programação reativa)
 - MySQL 8.0.21 (Banco de dados)
+- Apache Commons CSV (Processamento de arquivos CSV)
 
 ## 🐳 Configuração do Banco de Dados
 
@@ -85,10 +86,12 @@ src/
 │   │   ├── model/                 # Modelos de dados
 │   │   │   ├── RalieMetadata.java    # DTO para metadados de downloads
 │   │   │   └── entity/              # Entidades JPA
-│   │   │       └── RalieMetadataEntity.java # Entidade de metadados
+│   │   │       ├── RalieMetadataEntity.java # Entidade de metadados
+│   │   │       └── RalieUsinaCsvImportEntity.java # Entidade para importação de CSV RALIE
 │   │   │
 │   │   ├── service/               # Lógica de negócios
 │   │   │   ├── AneelRalieService.java   # Serviço para integração com dados da ANEEL
+│   │   │   ├── RalieUsinaCsvImportService.java # Serviço para importação de CSV RALIE
 │   │   │   ├── scheduler/            # Agendadores de tarefas
 │   │   │   │   └── RalieDownloadScheduler.java # Agendador de downloads RALIE
 │   │   │   ├── GoogleService.java    # Serviço para integração com Google
@@ -97,7 +100,8 @@ src/
 │   │   │   ├── FileRalieMetadataService.java # Implementação baseada em arquivo (legado)
 │   │   │   └── RalieMetadataDbService.java   # Implementação baseada em banco de dados
 │   │   │   └── repository/            # Repositórios JPA
-│   │   │       └── RalieMetadataRepository.java # Repositório para operações de metadados
+│   │   │       ├── RalieMetadataRepository.java # Repositório para operações de metadados
+│   │   │       └── RalieUsinaCsvImportRepository.java # Repositório para operações de importação de CSV
 │   │   │
 │   │   └── App.java          # Classe principal da aplicação
 │   │
@@ -175,7 +179,9 @@ logs/                           # Arquivos de log (criado em tempo de execução
 
 - **GET** `/api/ralie-usina/download-csv`
   - Faz o download do arquivo CSV mais recente do Relatório de Acompanhamento da Expansão da Oferta de Geração de Energia Elétrica (RALIE) da ANEEL
-  - Retorna o arquivo CSV para download
+  - Processa automaticamente a codificação do arquivo (UTF-8, ISO-8859-1, Windows-1252)
+  - Importa os dados para o banco de dados
+  - Retorna o caminho do arquivo CSV baixado
 
 
 ### Test Endpoints
@@ -206,6 +212,32 @@ logs/                           # Arquivos de log (criado em tempo de execução
   ```
   Bem-vindo à API da Bolt Energy!
   ```
+
+## 📊 Importação de Dados RALIE
+
+O sistema agora possui um mecanismo avançado para importação de arquivos CSV do RALIE, com as seguintes características:
+
+### 🛠️ Funcionalidades de Importação
+
+1. **Suporte a Múltiplas Codificações**
+   - Detecção automática de codificação (UTF-8, ISO-8859-1, Windows-1252)
+   - Correção automática de caracteres especiais
+   - Tratamento robusto de diferentes formatos de arquivo
+
+2. **Processamento Eficiente**
+   - Leitura em streaming para arquivos grandes
+   - Processamento em lote para melhor desempenho
+   - Validação de dados durante a importação
+
+3. **Tratamento de Erros**
+   - Logs detalhados para diagnóstico
+   - Continuação do processamento mesmo com linhas inválidas
+   - Relatório de erros ao final do processo
+
+4. **Persistência**
+   - Armazenamento seguro no banco de dados
+   - Atualização em lote para melhor desempenho
+   - Rastreamento de metadados de importação
 
 ## 🚀 Otimização para Download de Arquivos
 

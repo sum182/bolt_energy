@@ -12,29 +12,17 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ClientHttpRequest;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Service for downloading and processing RALIE data from ANEEL.
@@ -57,6 +45,7 @@ public class AneelRalieService {
     
     private final WebClientConfig webClientConfig;
     private final RalieMetadataService metadataService;
+    private final RalieUsinaCsvImportService csvImportService;
     private WebClient webClient;
     private Path appBasePath;
     private Path downloadPath;
@@ -201,7 +190,7 @@ public class AneelRalieService {
             log.info("Iniciando download para: {}", filePath);
             long startTime = System.currentTimeMillis();
             
-            downloadFile(fileUrl, filePath);
+            String fileContent = downloadFile(fileUrl, filePath);
             
             long fileSize = Files.size(filePath);
             double duration = (System.currentTimeMillis() - startTime) / 1000.0;
@@ -209,7 +198,9 @@ public class AneelRalieService {
             log.info("Download concluído em {}s - Tamanho: {}MB", 
                     String.format("%.2f", duration), 
                     String.format("%.2f", fileSize / (1024.0 * 1024.0)));
-            
+
+            importCsvToDatabase(fileContent);
+
             metadata.update(etag, lastModified, filePath.toString(), fileSize);
             metadataService.saveMetadata(metadata);
             this.metadata = metadataService.loadMetadata();
@@ -219,8 +210,8 @@ public class AneelRalieService {
             return filePath.toString();
             
         } catch (Exception e) {
-            log.error("Erro ao baixar novo arquivo: {}", e.getMessage(), e);
-            throw new RalieDownloadException("Falha ao baixar o novo arquivo: " + e.getMessage(), e);
+            log.error("Erro ao processar o arquivo: {}", e.getMessage(), e);
+            throw new RalieDownloadException("Falha ao processar o arquivo: " + e.getMessage(), e);
         }
     }
     
@@ -243,7 +234,39 @@ public class AneelRalieService {
         return RALIE_CSV_URL;
     }
     
-    private void downloadFile(String fileUrl, Path targetPath) {
+    private void importCsvToDatabase(String csvContent) {
+        log.info("Iniciando importação do CSV para o banco de dados...");
+        try {
+            csvImportService.importCsv(csvContent);
+            log.info("Importação do CSV concluída com sucesso");
+        } catch (Exception e) {
+            log.error("Erro ao importar o CSV para o banco de dados: {}", e.getMessage(), e);
+            throw new RalieDownloadException("Falha ao importar o CSV para o banco de dados", e);
+        }
+    }
+    
+    private String detectCharset(byte[] content) {
+        // Lista de codificações a serem testadas (em ordem de preferência)
+        String[] charsets = {"UTF-8", "ISO-8859-1", "Windows-1252", "US-ASCII"};
+        
+        for (String charset : charsets) {
+            try {
+                String test = new String(content, charset);
+                // Verifica se a conversão foi bem-sucedida
+                byte[] backToBytes = test.getBytes(charset);
+                if (Arrays.equals(content, backToBytes)) {
+                    return charset;
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        
+        // Se não conseguir detectar, retorna UTF-8 como padrão
+        return "UTF-8";
+    }
+    
+    private String downloadFile(String fileUrl, Path targetPath) {
         log.debug("Iniciando download do arquivo de: {}", fileUrl);
         log.debug("Salvando em: {}", targetPath);
         
@@ -252,51 +275,44 @@ public class AneelRalieService {
             log.debug("Arquivo temporário criado: {}", tempFile);
             
             try {
-                webClient.get()
+                // Baixa o conteúdo como array de bytes primeiro
+                byte[] fileContent = webClient.get()
                     .uri(fileUrl)
                     .accept(MediaType.APPLICATION_OCTET_STREAM)
                     .retrieve()
-                    .bodyToFlux(DataBuffer.class)
-                    .map(dataBuffer -> {
-                        byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                        dataBuffer.read(bytes);
-                        return bytes;
-                    })
-                    .collectList()
-                    .flatMap(bytesList -> {
-                        byte[] allBytes = new byte[bytesList.stream().mapToInt(b -> b.length).sum()];
-                        int offset = 0;
-                        for (byte[] bytes : bytesList) {
-                            System.arraycopy(bytes, 0, allBytes, offset, bytes.length);
-                            offset += bytes.length;
-                        }
-                        return Mono.just(allBytes);
-                    })
-                    .doOnNext(bytes -> {
-                        try {
-                            Files.write(tempFile, bytes);
-                        } catch (IOException e) {
-                            log.error("Erro ao salvar o arquivo temporário: {}", e.getMessage(), e);
-                            throw new RuntimeException("Erro ao salvar o arquivo temporário", e);
-                        }
-                    })
+                    .bodyToMono(byte[].class)
                     .block();
                 
-                Files.move(tempFile, targetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                log.debug("Arquivo movido para o destino final: {}", targetPath);
+                if (fileContent == null || fileContent.length == 0) {
+                    throw new RalieDownloadException("O conteúdo do arquivo está vazio");
+                }
+                
+                // Tenta detectar a codificação automaticamente
+                String detectedCharset = detectCharset(fileContent);
+                log.debug("Codificação detectada: {}", detectedCharset);
+                
+                // Converte para String usando a codificação detectada
+                String content = new String(fileContent, detectedCharset);
+                
+                // Escreve o conteúdo no arquivo final com codificação UTF-8
+                Files.writeString(targetPath, content, java.nio.charset.StandardCharsets.UTF_8);
+                
+                log.debug("Arquivo salvo com sucesso em: {}", targetPath);
+                
+                return content;
                 
             } catch (Exception e) {
-                log.warn("Erro durante o download. Removendo arquivo temporário: {}", tempFile);
+                log.warn("Erro durante o download. Removendo arquivo temporário: {}", tempFile, e);
                 try {
                     Files.deleteIfExists(tempFile);
                 } catch (IOException ex) {
-                    log.warn("Não foi possível remover o arquivo temporário: {}", tempFile, ex);
+                    log.warn("Falha ao remover arquivo temporário: {}", tempFile, ex);
                 }
                 throw e;
             }
             
         } catch (Exception e) {
-            String errorMsg = String.format("Erro ao baixar o arquivo: %s", e.getMessage());
+            String errorMsg = String.format("Falha ao baixar o arquivo: %s", e.getMessage());
             log.error(errorMsg, e);
             throw new RalieDownloadException(errorMsg, e);
         }
