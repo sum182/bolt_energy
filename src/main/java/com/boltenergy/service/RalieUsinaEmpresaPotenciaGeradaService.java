@@ -80,4 +80,26 @@ public class RalieUsinaEmpresaPotenciaGeradaService {
         log.info("Buscando as 5 maiores geradoras de energia");
         return repository.findTop5ByOrderByPotenciaDesc();
     }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public void processLargestGeneratorsTable() {
+        log.info("Iniciando processamento da tabela de maiores geradoras");
+        
+        // Primeiro limpa a tabela
+        log.info("Limpando tabela de potência gerada");
+        repository.deleteAll();
+        
+        // Aguarda um pouco para garantir que o delete foi concluído
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        
+        // Depois processa os novos dados
+        log.info("Processando novos dados de potência gerada");
+        repository.processDataTableLargestGenerators();
+        
+        log.info("Processamento da tabela de maiores geradoras concluído com sucesso");
+    }
 }

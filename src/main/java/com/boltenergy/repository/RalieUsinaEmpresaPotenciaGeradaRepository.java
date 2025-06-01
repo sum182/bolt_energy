@@ -22,12 +22,11 @@ public interface RalieUsinaEmpresaPotenciaGeradaRepository extends JpaRepository
         "INSERT INTO ralie_usina_empresa_potencia_gerada (cod_ceg, nom_empreendimento, potencia) " +
             "SELECT " +
             "    cod_ceg, " +
-            "    nom_empreendimento, " +
+            "    SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT nom_empreendimento), ',', 1) as nom_empreendimento, " +
             "    COALESCE(SUM(mda_potencia_outorgada_kw), 0) as potencia " +
             "FROM ralie_usina_csv_import " +
             "WHERE cod_ceg IS NOT NULL AND cod_ceg != '' " +
-            "GROUP BY cod_ceg, nom_empreendimento")
+            "GROUP BY cod_ceg")
     @Modifying
-    @Transactional
     void processDataTableLargestGenerators();
 }

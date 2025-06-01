@@ -34,3 +34,12 @@
 # Controllers
 - Após alterações atualizar a documentação do Swagger.
 - Após alterações atualizar README.md
+
+
+# Validação Windsurf
+- Use o padrão de nomenclatura Java (camelCase para variáveis e métodos, PascalCase para classes).
+- Use Google Java Style Guide como referência para formatação de código.
+- Use Code Clean para manter o código limpo e legível.
+- Deixar o código simples e direto, evitando complexidade desnecessária, para que qualquer desenvolvedor consiga entender e manter o código facilmente.
+- Atualizar Reame.md na seção Estrutura do Projeto
+- Atualizar Reame.md na seção Endpoints da API
