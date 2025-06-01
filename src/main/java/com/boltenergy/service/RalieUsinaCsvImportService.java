@@ -228,14 +228,16 @@ public class RalieUsinaCsvImportService {
     }
     
     private void setIfExists(CSVRecord record, String column, java.util.function.Consumer<String> setter) {
-        if (record.isSet(column)) {
-            String value = record.get(column);
-            if (value != null && !value.trim().isEmpty()) {
-                String fixedValue = fixEncoding(value);
-                setter.accept(fixedValue);
+        try {
+            if (record.isSet(column)) {
+                String value = record.get(column);
+                if (value != null && !value.trim().isEmpty()) {
+                    String fixedValue = fixEncoding(value);
+                    setter.accept(fixedValue);
+                }
             }
-        } else if (record.size() > 0) {
-            throw new IllegalArgumentException("Coluna não encontrada no registro: " + column);
+        } catch (IllegalArgumentException e) {
+            log.warn("Coluna não encontrada no registro: {}", column);
         }
     }
     
@@ -248,6 +250,12 @@ public class RalieUsinaCsvImportService {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    private boolean isValidEntity(RalieUsinaCsvImportEntity entity) {
+        return entity.getNomEmpreendimento() != null || 
+               entity.getCodCeg() != null ||
+               entity.getIdeNucleoCeg() != null;
     }
     
     private Double parseDouble(String value) {
