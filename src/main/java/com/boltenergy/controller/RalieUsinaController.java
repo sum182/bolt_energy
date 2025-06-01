@@ -52,8 +52,8 @@ public class RalieUsinaController {
             return ResponseEntity.ok("Novo arquivo RALIE baixado com sucesso: " + filePath);
         }
         
-        log.info("Utilizando arquivo RALIE existente: {}", filePath);
-        return ResponseEntity.ok("Utilizando arquivo RALIE existente: " + filePath);
+
+        return ResponseEntity.ok("O arquivo remoto não foi modificado desde o último download");
     }
     
     @GetMapping("/maiores-geradoras")

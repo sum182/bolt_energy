@@ -45,7 +45,7 @@ public class RalieUsinaCsvImportEntity {
     @Column(name = "mda_potencia_outorgada_kw")
     private Double mdaPotenciaOutorgadaKw;
     
-    @Column(name = "dsc_propri_regime_pariticipacao")
+    @Column(name = "dsc_propri_regime_pariticipacao", columnDefinition = "TEXT")
     private String dscPropriRegimePariticipacao;
     
     @Column(name = "dsc_tipo_conexao")
@@ -135,7 +135,7 @@ public class RalieUsinaCsvImportEntity {
     @Column(name = "dat_conclusao_sis_trans_realizado")
     private LocalDate datConclusaoSisTransRealizado;
     
-    @Column(name = "dsc_justificativa_previsao")
+    @Column(name = "dsc_justificativa_previsao", columnDefinition = "TEXT")
     private String dscJustificativaPrevisao;
     
     @Column(name = "dsc_comercializacao_energia")

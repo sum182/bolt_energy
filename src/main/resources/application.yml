@@ -103,7 +103,7 @@ management:
 
 # Configurações do WebClient
 webclient:
-  max-in-memory-size: 50MB
+  max-in-memory-size: 500MB
   connect-timeout: 300s  # 5 minutos para conexão
   response-timeout: 300s  # 5 minutos para resposta
   read-timeout: 600s     # 10 minutos para leitura total

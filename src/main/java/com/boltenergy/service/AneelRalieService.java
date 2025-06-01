@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -274,54 +277,78 @@ public class AneelRalieService {
     }
     
     private String downloadFile(String fileUrl, Path targetPath) {
-        log.debug("Iniciando download do arquivo de: {}", fileUrl);
-        log.debug("Salvando em: {}", targetPath);
+        log.info("Iniciando download do arquivo de: {}", fileUrl);
+        log.info("Salvando em: {}", targetPath);
         
+        Path tempFile = null;
         try {
-            Path tempFile = Files.createTempFile("ralie_download_", ".tmp");
+            // Cria o diretório de destino se não existir
+            Files.createDirectories(targetPath.getParent());
+            
+            // Cria um arquivo temporário no mesmo diretório do arquivo de destino
+            tempFile = Files.createTempFile(targetPath.getParent(), "ralie_download_", ".tmp");
             log.debug("Arquivo temporário criado: {}", tempFile);
             
-            try {
-                // Baixa o conteúdo como array de bytes primeiro
-                byte[] fileContent = webClient.get()
+            // Baixa o conteúdo diretamente para o arquivo temporário
+            try (FileChannel channel = FileChannel.open(tempFile, 
+                    StandardOpenOption.CREATE, 
+                    StandardOpenOption.WRITE, 
+                    StandardOpenOption.TRUNCATE_EXISTING)) {
+                
+                webClient.get()
                     .uri(fileUrl)
                     .accept(MediaType.APPLICATION_OCTET_STREAM)
                     .retrieve()
-                    .bodyToMono(byte[].class)
+                    .bodyToFlux(DataBuffer.class)
+                    .doOnNext(dataBuffer -> {
+                        try {
+                            ByteBuffer byteBuffer = dataBuffer.asByteBuffer();
+                            while (byteBuffer.hasRemaining()) {
+                                channel.write(byteBuffer);
+                            }
+                            DataBufferUtils.release(dataBuffer);
+                        } catch (IOException e) {
+                            DataBufferUtils.release(dataBuffer);
+                            throw new RuntimeException("Erro ao escrever no arquivo temporário", e);
+                        }
+                    })
+                    .doOnError(e -> {
+                        log.error("Erro durante o download: {}", e.getMessage());
+                        throw new RalieDownloadException("Erro durante o download do arquivo: " + e.getMessage(), e);
+                    })
+                    .collectList()
                     .block();
+            }
+            
+            byte[] fileContent = Files.readAllBytes(tempFile);
+            
+            if (fileContent == null || fileContent.length == 0) {
+                throw new RalieDownloadException("O conteúdo do arquivo está vazio");
+            }
+            
+            String detectedCharset = detectCharset(fileContent);
+            log.debug("Codificação detectada: {}", detectedCharset);
+            
+            String content = new String(fileContent, detectedCharset);
+            
+            Files.writeString(targetPath, content, StandardCharsets.UTF_8);
+            
+            log.info("Arquivo salvo com sucesso em: {}", targetPath);
+            
+            return content;
                 
-                if (fileContent == null || fileContent.length == 0) {
-                    throw new RalieDownloadException("O conteúdo do arquivo está vazio");
-                }
-                
-                // Tenta detectar a codificação automaticamente
-                String detectedCharset = detectCharset(fileContent);
-                log.debug("Codificação detectada: {}", detectedCharset);
-                
-                // Converte para String usando a codificação detectada
-                String content = new String(fileContent, detectedCharset);
-                
-                // Escreve o conteúdo no arquivo final com codificação UTF-8
-                Files.writeString(targetPath, content, java.nio.charset.StandardCharsets.UTF_8);
-                
-                log.debug("Arquivo salvo com sucesso em: {}", targetPath);
-                
-                return content;
-                
-            } catch (Exception e) {
-                log.warn("Erro durante o download. Removendo arquivo temporário: {}", tempFile, e);
+        } catch (Exception e) {
+            log.warn("Erro durante o download: {}", e.getMessage());
+            throw new RalieDownloadException("Falha ao baixar o arquivo: " + e.getMessage(), e);
+        } finally {
+            if (tempFile != null) {
                 try {
                     Files.deleteIfExists(tempFile);
+                    log.debug("Arquivo temporário removido: {}", tempFile);
                 } catch (IOException ex) {
                     log.warn("Falha ao remover arquivo temporário: {}", tempFile, ex);
                 }
-                throw e;
             }
-            
-        } catch (Exception e) {
-            String errorMsg = String.format("Falha ao baixar o arquivo: %s", e.getMessage());
-            log.error(errorMsg, e);
-            throw new RalieDownloadException(errorMsg, e);
         }
     }
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -24,6 +26,6 @@ public class RalieUsinaEmpresaPotenciaGeradaEntity {
     @Column(name = "nom_empreendimento", nullable = false, length = 255)
     private String nomEmpreendimento;
     
-    @Column(name = "potencia", nullable = false)
-    private Double potencia;
+    @Column(name = "potencia", nullable = false, precision = 20, scale = 0)
+    private BigDecimal potencia;
 }

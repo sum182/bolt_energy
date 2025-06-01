@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -96,16 +98,25 @@ public class RalieUsinaCsvImportService {
                     .setTrim(true)
                     .build())) {
             
+            int batchSize = 10000;
             int count = 0;
+            List<RalieUsinaCsvImportEntity> batchImport = new ArrayList<>(batchSize);
+            
             for (CSVRecord record : parser) {
                 RalieUsinaCsvImportEntity entity = new RalieUsinaCsvImportEntity();
                 mapRecordToEntity(record, entity);
-                repository.save(entity);
+                batchImport.add(entity);
                 count++;
                 
-                if (count % 1000 == 0) {
+                if (batchImport.size() >= batchSize) {
+                    repository.saveAllAndFlush(batchImport);
+                    batchImport.clear();
                     log.info("Registros processados: {}", count);
                 }
+            }
+            
+            if (!batchImport.isEmpty()) {
+                repository.saveAllAndFlush(batchImport);
             }
             
             log.info("Importação concluída. Total de registros importados: {}", count);

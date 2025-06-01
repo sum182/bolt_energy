@@ -99,7 +99,6 @@ src/
 │   │   │   ├── GoogleService.java    # Serviço para integração com Google
 │   │   │   ├── HttpService.java      # Serviço genérico HTTP
 │   │   │   ├── RalieMetadataService.java     # Interface para gerenciamento de metadados
-│   │   │   ├── FileRalieMetadataService.java # Implementação baseada em arquivo (legado)
 │   │   │   └── RalieMetadataDbService.java   # Implementação baseada em banco de dados
 │   │   │   └── repository/            # Repositórios JPA
 │   │   │       ├── RalieMetadataRepository.java # Repositório para operações de metadados

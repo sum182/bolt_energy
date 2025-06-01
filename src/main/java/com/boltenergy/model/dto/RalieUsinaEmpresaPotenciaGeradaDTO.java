@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -14,7 +16,7 @@ public class RalieUsinaEmpresaPotenciaGeradaDTO {
     private Long id;
     private String codCeg;
     private String nomEmpreendimento;
-    private Double potencia;
+    private BigDecimal potencia;
     
     public static RalieUsinaEmpresaPotenciaGeradaDTO fromEntity(com.boltenergy.model.entity.RalieUsinaEmpresaPotenciaGeradaEntity entity) {
         return RalieUsinaEmpresaPotenciaGeradaDTO.builder()
