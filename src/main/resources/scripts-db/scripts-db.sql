@@ -1,0 +1,1 @@
+delete from bolt_energy_db.ralie_metadata;

@@ -1,6 +1,12 @@
 # Java Windsurf Rules - Bolt Energy
 
 
+# Objetivo da Aplicação
+- Baixar arquivo CSV de uma api externa
+- Importar arquivo CSV para tabela no banco de dados
+- Processar dados, totalizando totais desta tabela do arquivo csv em outra tabelas
+
+
 # Padrões
 - Use Code Clean para manter o código limpo e legível.
 - Deixar o código simples e direto, evitando complexidade desnecessária, para que qualquer desenvolvedor consiga entender e manter o código facilmente.

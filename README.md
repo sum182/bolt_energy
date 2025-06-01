@@ -87,11 +87,13 @@ src/
 │   │   │   ├── RalieMetadata.java    # DTO para metadados de downloads
 │   │   │   └── entity/              # Entidades JPA
 │   │   │       ├── RalieMetadataEntity.java # Entidade de metadados
-│   │   │       └── RalieUsinaCsvImportEntity.java # Entidade para importação de CSV RALIE
+│   │   │       ├── RalieUsinaCsvImportEntity.java # Entidade para importação de CSV RALIE
+│   │   │       └── RalieUsinaEmpresaPotenciaGeradaEntity.java # Entidade para armazenar a potência gerada por usina
 │   │   │
 │   │   ├── service/               # Lógica de negócios
 │   │   │   ├── AneelRalieService.java   # Serviço para integração com dados da ANEEL
 │   │   │   ├── RalieUsinaCsvImportService.java # Serviço para importação de CSV RALIE
+│   │   │   └── RalieUsinaEmpresaPotenciaGeradaService.java # Serviço para processamento de potência gerada
 │   │   │   ├── scheduler/            # Agendadores de tarefas
 │   │   │   │   └── RalieDownloadScheduler.java # Agendador de downloads RALIE
 │   │   │   ├── GoogleService.java    # Serviço para integração com Google
@@ -101,7 +103,8 @@ src/
 │   │   │   └── RalieMetadataDbService.java   # Implementação baseada em banco de dados
 │   │   │   └── repository/            # Repositórios JPA
 │   │   │       ├── RalieMetadataRepository.java # Repositório para operações de metadados
-│   │   │       └── RalieUsinaCsvImportRepository.java # Repositório para operações de importação de CSV
+│   │   │       ├── RalieUsinaCsvImportRepository.java # Repositório para operações de importação de CSV
+│   │   │       └── RalieUsinaEmpresaPotenciaGeradaRepository.java # Repositório para operações de potência gerada
 │   │   │
 │   │   └── App.java          # Classe principal da aplicação
 │   │
@@ -180,8 +183,13 @@ logs/                           # Arquivos de log (criado em tempo de execução
 - **GET** `/api/ralie-usina/download-csv`
   - Faz o download do arquivo CSV mais recente do Relatório de Acompanhamento da Expansão da Oferta de Geração de Energia Elétrica (RALIE) da ANEEL
   - Processa automaticamente a codificação do arquivo (UTF-8, ISO-8859-1, Windows-1252)
-  - Importa os dados para o banco de dados
+  - Importa os dados para a tabela de importação (`ralie_usina_csv_import`)
+  - Processa os dados para a tabela de potência gerada (`ralie_usina_empresa_potencia_gerada`)
   - Retorna o caminho do arquivo CSV baixado
+
+- **GET** `/api/ralie-usina/potencia-gerada`
+  - Retorna a lista de todas as usinas com suas respectivas potências totais
+  - Os dados são obtidos da tabela `ralie_usina_empresa_potencia_gerada`
 
 
 ### Test Endpoints

@@ -46,6 +46,7 @@ public class AneelRalieService {
     private final WebClientConfig webClientConfig;
     private final RalieMetadataService metadataService;
     private final RalieUsinaCsvImportService csvImportService;
+    private final RalieUsinaEmpresaPotenciaGeradaService potenciaGeradaService;
     private WebClient webClient;
     private Path appBasePath;
     private Path downloadPath;
@@ -239,6 +240,10 @@ public class AneelRalieService {
         try {
             csvImportService.importCsv(csvContent);
             log.info("Importação do CSV concluída com sucesso");
+
+            potenciaGeradaService.processarDadosImportados();
+            log.info("Processamento dos dados para a tabela de potência gerada concluído");
+            
         } catch (Exception e) {
             log.error("Erro ao importar o CSV para o banco de dados: {}", e.getMessage(), e);
             throw new RalieDownloadException("Falha ao importar o CSV para o banco de dados", e);
