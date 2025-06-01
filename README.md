@@ -8,16 +8,14 @@ API RESTful desenvolvida com Spring Boot para o sistema Bolt Energy.
 - Spring Boot 3.2.0
 - Spring Web
 - Spring WebFlux (para WebClient reativo)
-- Spring Data JPA (para acesso a dados)
-- Spring Scheduler (para agendamento de tarefas)
+- Spring Data JPA
+- Spring Scheduler
 - Lombok
-- SpringDoc OpenAPI (Documentação)
-- JUnit 5 (Testes)
-- Mockito (Mocks para testes)
-- SLF4J (Logging)
-- Reactor (Programação reativa)
+- SpringDoc OpenAPI
+- JUnit 5
+- Mockito
+- SLF4J
 - MySQL 8.0.21 (Banco de dados)
-- Apache Commons CSV (Processamento de arquivos CSV)
 
 ## 🐳 Configuração do Banco de Dados
 
@@ -67,64 +65,63 @@ O projeto utiliza o MySQL 8.0.21 em um container Docker para armazenar os metada
 src/
 ├── main/
 │   ├── java/com/boltenergy/
-│   │   ├── config/                  # Configurações da aplicação
-│   │   │   ├── AppConfig.java        # Configurações gerais da aplicação
-│   │   │   ├── SwaggerConfig.java    # Configuração do Swagger/OpenAPI
-│   │   │   ├── WebClientConfig.java  # Configuração central do WebClient
-│   │   │   └── WebClientProperties.java  # Propriedades do WebClient
-│   │   │   ├── RalieSchedulingProperties.java # Propriedades de agendamento
-│   │   │   └── SchedulingConfig.java    # Configuração de agendamento
+│   │   ├── config/
+│   │   │   ├── AppConfig.java
+│   │   │   ├── SwaggerConfig.java
+│   │   │   ├── WebClientConfig.java
+│   │   │   └── WebClientProperties.java
+│   │   │   ├── RalieSchedulingProperties.java
+│   │   │   └── SchedulingConfig.java
 │   │   │
-│   │   ├── controller/            # Controladores da API
-│   │   │   ├── RalieUsinaController.java  # Endpoints para dados RALIE
-│   │   │   └── TestController.java   # Endpoints de teste
+│   │   ├── controller/
+│   │   │   ├── RalieUsinaController.java
+│   │   │   └── TestController.java
 │   │   │
-│   │   ├── exception/             # Tratamento de exceções
-│   │   │   ├── GlobalExceptionHandler.java # Tratamento global de exceções
-│   │   │   └── RalieDownloadException.java # Exceção específica para falhas no download
+│   │   ├── exception/
+│   │   │   ├── GlobalExceptionHandler.java
+│   │   │   └── RalieDownloadException.java
 │   │   │
-│   │   ├── model/                 # Modelos de dados
-│   │   │   ├── RalieMetadata.java    # DTO para metadados de downloads
-│   │   │   └── entity/              # Entidades JPA
-│   │   │       ├── RalieMetadataEntity.java # Entidade de metadados
-│   │   │       ├── RalieUsinaCsvImportEntity.java # Entidade para importação de CSV RALIE
-│   │   │       └── RalieUsinaEmpresaPotenciaGeradaEntity.java # Entidade para armazenar a potência gerada por usina
+│   │   ├── model/
+│   │   │   ├── RalieMetadata.java
+│   │   │   └── entity/
+│   │   │       ├── RalieMetadataEntity.java
+│   │   │       ├── RalieUsinaCsvImportEntity.java
+│   │   │       └── RalieUsinaEmpresaPotenciaGeradaEntity.java
 │   │   │
-│   │   ├── service/               # Lógica de negócios
-│   │   │   ├── AneelRalieService.java   # Serviço para integração com dados da ANEEL
-│   │   │   ├── RalieUsinaCsvImportService.java # Serviço para importação de CSV RALIE
-│   │   │   └── RalieUsinaEmpresaPotenciaGeradaService.java # Serviço para processamento de potência gerada
-│   │   │   ├── scheduler/            # Agendadores de tarefas
-│   │   │   │   └── RalieDownloadScheduler.java # Agendador de downloads RALIE
-│   │   │   ├── GoogleService.java    # Serviço para integração com Google
-│   │   │   ├── HttpService.java      # Serviço genérico HTTP
-│   │   │   ├── RalieMetadataService.java     # Interface para gerenciamento de metadados
-│   │   │   └── RalieMetadataDbService.java   # Implementação baseada em banco de dados
-│   │   │   └── repository/            # Repositórios JPA
-│   │   │       ├── RalieMetadataRepository.java # Repositório para operações de metadados
-│   │   │       ├── RalieUsinaCsvImportRepository.java # Repositório para operações de importação de CSV
-│   │   │       └── RalieUsinaEmpresaPotenciaGeradaRepository.java # Repositório para operações de potência gerada
+│   │   ├── service/
+│   │   │   ├── AneelRalieService.java
+│   │   │   ├── RalieUsinaCsvImportService.java
+│   │   │   └── RalieUsinaEmpresaPotenciaGeradaService.java
+│   │   │   ├── scheduler/
+│   │   │   │   └── RalieDownloadScheduler.java
+│   │   │   ├── GoogleService.java
+│   │   │   ├── HttpService.java
+│   │   │   ├── RalieMetadataService.java
+│   │   │   └── RalieMetadataDbService.java
+│   │   │   └── repository/
+│   │   │       ├── RalieMetadataRepository.java
+│   │   │       ├── RalieUsinaCsvImportRepository.java
+│   │   │       └── RalieUsinaEmpresaPotenciaGeradaRepository.java
 │   │   │
-│   │   └── App.java          # Classe principal da aplicação
+│   │   └── App.java
 │   │
-│   └── resources/                 # Recursos da aplicação
-│       ├── application.yml           # Configurações da aplicação
-│       └── examples/                 # Exemplos de arquivos
-│           └── ralie-usina-example-simple.csv  # Exemplo de arquivo RALIE
+│   └── resources/
+│       ├── application.yml
+│       └── examples/
+│           └── ralie-usina-example-simple.csv
 │
-└── test/                           # Testes unitários e de integração
+└── test/
     └── java/com/boltenergy/
-        ├── controller/                # Testes dos controladores
+        ├── controller/
         │   ├── RalieUsinaControllerTest.java
         │   └── TestControllerTest.java
-        └── service/                   # Testes dos serviços
+        └── service/
             └── AneelRalieServiceTest.java
 
-# Diretórios gerados em tempo de execução
-/downloads/                     # Arquivos baixados (criado em tempo de execução)
-  └── ralie_metadata.json       # Metadados dos downloads (criado em tempo de execução)
-logs/                           # Arquivos de log (criado em tempo de execução)
-  └── application.log           # Logs da aplicação
+/downloads/
+  └── ralie_metadata.json
+logs/
+  └── application.log
 ```
 
 ## 📋 Pré-requisitos
@@ -384,6 +381,22 @@ Para executar os testes:
 ```bash
 mvn test
 ```
+
+## 🤖 Inteligência Artificial - Windsurf
+
+Este projeto utiliza o Windsurf, uma ferramenta de IA integrada ao IntelliJ IDEA, para auxiliar no desenvolvimento.
+
+### Configuração
+- Instale a extensão Windsurf no IntelliJ
+- Faça login com sua conta
+- O assistente estará disponível na IDE
+
+### Regras do Projeto
+O arquivo `.windsurf/rules.json` define:
+- Padrões de nomenclatura (PascalCase, camelCase)
+- Convenções de código
+- Diretrizes de documentação
+- Estrutura de pacotes
 
 
 
