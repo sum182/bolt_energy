@@ -51,7 +51,6 @@ public class RalieUsinaController {
             return ResponseEntity.ok("Novo arquivo RALIE baixado com sucesso: " + filePath);
         }
         
-
         return ResponseEntity.ok("O arquivo remoto não foi modificado desde o último download");
     }
     

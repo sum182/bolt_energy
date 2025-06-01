@@ -186,6 +186,12 @@ logs/                           # Arquivos de log (criado em tempo de execução
   - Processa os dados para a tabela de potência gerada (`ralie_usina_empresa_potencia_gerada`)
   - Retorna o caminho do arquivo CSV baixado
 
+- **POST** `/api/ralie-usina/processa-maiores-geradoras`
+  - Processa a tabela de maiores geradoras a partir dos dados importados
+  - Agrupa os dados por `cod_ceg` e soma as potências
+  - Remove registros existentes antes de processar os novos dados
+  - Retorna mensagem de sucesso ou erro
+
 - **GET** `/api/ralie-usina/maiores-geradoras`
   - Retorna a lista das 5 maiores geradoras e suas respectivas potências totais
   - Os dados são obtidos da tabela `ralie_usina_empresa_potencia_gerada`

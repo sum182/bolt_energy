@@ -256,13 +256,11 @@ public class AneelRalieService {
     }
     
     private String detectCharset(byte[] content) {
-        // Lista de codificações a serem testadas (em ordem de preferência)
         String[] charsets = {"UTF-8", "ISO-8859-1", "Windows-1252", "US-ASCII"};
         
         for (String charset : charsets) {
             try {
                 String test = new String(content, charset);
-                // Verifica se a conversão foi bem-sucedida
                 byte[] backToBytes = test.getBytes(charset);
                 if (Arrays.equals(content, backToBytes)) {
                     return charset;
@@ -272,7 +270,6 @@ public class AneelRalieService {
             }
         }
         
-        // Se não conseguir detectar, retorna UTF-8 como padrão
         return "UTF-8";
     }
     
@@ -282,14 +279,10 @@ public class AneelRalieService {
         
         Path tempFile = null;
         try {
-            // Cria o diretório de destino se não existir
             Files.createDirectories(targetPath.getParent());
             
-            // Cria um arquivo temporário no mesmo diretório do arquivo de destino
             tempFile = Files.createTempFile(targetPath.getParent(), "ralie_download_", ".tmp");
             log.debug("Arquivo temporário criado: {}", tempFile);
-            
-            // Baixa o conteúdo diretamente para o arquivo temporário
             try (FileChannel channel = FileChannel.open(tempFile, 
                     StandardOpenOption.CREATE, 
                     StandardOpenOption.WRITE, 

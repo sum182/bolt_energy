@@ -14,5 +14,4 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties(RalieSchedulingProperties.class)
 @ConditionalOnProperty(prefix = "ralie.schedule", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class SchedulingConfig {
-    // Configuração do agendamento
 }

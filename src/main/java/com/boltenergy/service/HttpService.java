@@ -24,7 +24,6 @@ public class HttpService {
     
     @PostConstruct
     public void init() {
-        // Create a generic WebClient without a base URL since this service can make requests to any URL
         this.webClient = webClientConfig.webClientBuilder().build();
     }
 

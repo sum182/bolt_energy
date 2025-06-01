@@ -27,12 +27,10 @@ public class RalieUsinaCsvImportService {
     private String fixEncoding(String text) {
         if (text == null) return null;
         
-        // Se o texto já está em UTF-8 válido, retorna sem alterações
         if (isValidUtf8(text)) {
             return text;
         }
         
-        // Tenta converter de ISO-8859-1 para UTF-8
         try {
             byte[] bytes = text.getBytes("ISO-8859-1");
             String converted = new String(bytes, "UTF-8");
@@ -43,7 +41,6 @@ public class RalieUsinaCsvImportService {
             log.debug("Não foi possível converter de ISO-8859-1: {}", e.getMessage());
         }
         
-        // Tenta converter de Windows-1252 para UTF-8
         try {
             byte[] bytes = text.getBytes("Windows-1252");
             String converted = new String(bytes, "UTF-8");
@@ -54,15 +51,12 @@ public class RalieUsinaCsvImportService {
             log.debug("Não foi possível converter de Windows-1252: {}", e.getMessage());
         }
         
-        // Se nada funcionou, retorna o texto original
         log.warn("Não foi possível determinar a codificação correta para o texto: {}", text);
         return text;
     }
     
     private boolean isValidUtf8(String text) {
         try {
-            // Tenta codificar para UTF-8 e decodificar de volta
-            // Se não lançar exceção, é UTF-8 válido
             byte[] bytes = text.getBytes("UTF-8");
             String decoded = new String(bytes, "UTF-8");
             return text.equals(decoded);
@@ -144,7 +138,7 @@ public class RalieUsinaCsvImportService {
         setIfExists(record, "DscViabilidade", entity::setDscViabilidade);
         setIfExists(record, "DscSituacaoObra", entity::setDscSituacaoObra);
         
-        // Mapear datas
+
         setIfExists(record, "DatPrevisaoInicioObra", v -> entity.setDatPrevisaoInicioObra(parseDate(v, dateFormatter)));
         setIfExists(record, "DatContratoEPCOutorgado", v -> entity.setDatContratoEpcOutorgado(parseDate(v, dateFormatter)));
         setIfExists(record, "DatRecursoFinanceiroOutorgado", v -> entity.setDatRecursoFinanceiroOutorgado(parseDate(v, dateFormatter)));
@@ -215,7 +209,6 @@ public class RalieUsinaCsvImportService {
             if (record.isSet(column)) {
                 String value = record.get(column);
                 if (value != null && !value.trim().isEmpty()) {
-                    // Corrige a codificação do valor antes de definir
                     String fixedValue = fixEncoding(value);
                     setter.accept(fixedValue);
                 }

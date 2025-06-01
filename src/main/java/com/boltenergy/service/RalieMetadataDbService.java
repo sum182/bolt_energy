@@ -19,7 +19,6 @@ public class RalieMetadataDbService implements RalieMetadataService {
     
     @Override
     public void init(Path basePath) {
-        // Mantido para compatibilidade
     }
     
     @Override

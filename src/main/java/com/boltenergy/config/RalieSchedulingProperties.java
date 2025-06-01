@@ -25,7 +25,6 @@ public class RalieSchedulingProperties {
      */
     private String jobName = "RALIE Download Job";
     
-    // Getters e Setters
     
     public String getCron() {
         return cron;

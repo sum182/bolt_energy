@@ -29,9 +29,7 @@ public class WebClientConfig {
 
     private final WebClientProperties properties;
 
-//    // Timeout padrão aumentado para 5 minutos (300 segundos)
-//    // Timeout padrão em segundos
-//    private static final int DEFAULT_TIMEOUT_SECONDS = 300; // 5 minutos
+
 
     /**
      * Creates a generic WebClient builder with default configurations.
@@ -98,7 +96,6 @@ public class WebClientConfig {
                 .doOnConnected(conn ->
                         conn.addHandlerLast(new ReadTimeoutHandler(properties.getReadTimeout().toSeconds(), TimeUnit.SECONDS))
                            .addHandlerLast(new WriteTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS)))
-                // Habilita compressão
                 .compress(true);
     }
 
