@@ -1,6 +1,5 @@
 package com.boltenergy.service;
 
-import com.boltenergy.model.entity.RalieUsinaCsvImportEntity;
 import com.boltenergy.model.entity.RalieUsinaEmpresaPotenciaGeradaEntity;
 import com.boltenergy.repository.RalieUsinaCsvImportRepository;
 import com.boltenergy.repository.RalieUsinaEmpresaPotenciaGeradaRepository;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,63 +18,28 @@ public class RalieUsinaEmpresaPotenciaGeradaService {
     private final RalieUsinaCsvImportRepository csvImportRepository;
     
     @Transactional
-    public void processarDadosImportados() {
+    public void processImportedData() {
         log.info("Iniciando processamento dos dados importados para a tabela de potência gerada");
         
-        List<RalieUsinaCsvImportEntity> registros = csvImportRepository.findAll();
-        log.info("Total de registros encontrados na tabela de importação: {}", registros.size());
+        long totalRecords = csvImportRepository.count();
+        log.info("Total de registros na tabela de importação: {}", totalRecords);
         
-        if (registros.isEmpty()) {
+        if (totalRecords == 0) {
             log.warn("Nenhum registro encontrado na tabela de importação");
             return;
         }
         
-        // Agrupa por CodCEG e soma as potências
-        Map<String, RalieUsinaEmpresaPotenciaGeradaEntity> empreendimentosMap = new HashMap<>();
-        int registrosSemCodCeg = 0;
-        
-        for (RalieUsinaCsvImportEntity registro : registros) {
-            if (registro.getCodCeg() == null || registro.getCodCeg().trim().isEmpty()) {
-                registrosSemCodCeg++;
-                log.debug("Registro ignorado - CodCEG ausente ou inválido: {}", registro);
-                continue;
-            }
-            
-            String codCeg = registro.getCodCeg().trim();
-            String nomeEmpreendimento = (registro.getNomEmpreendimento() != null && !registro.getNomEmpreendimento().trim().isEmpty()) 
-                ? registro.getNomEmpreendimento().trim() 
-                : "Empreendimento " + codCeg;
-                
-            Double potencia = (registro.getMdaPotenciaOutorgadaKw() != null) 
-                ? registro.getMdaPotenciaOutorgadaKw() 
-                : 0.0;
-            
-            empreendimentosMap.compute(codCeg, (key, existing) -> {
-                if (existing == null) {
-                    return RalieUsinaEmpresaPotenciaGeradaEntity.builder()
-                        .codCeg(codCeg)
-                        .nomEmpreendimento(nomeEmpreendimento)
-                        .potencia(potencia)
-                        .build();
-                } else {
-                    existing.setPotencia(existing.getPotencia() + potencia);
-                    return existing;
-                }
-            });
-        }
-        
-        if (!empreendimentosMap.isEmpty()) {
-            // Remove registros existentes
+        try {
             deleteAll();
+            log.info("Iniciando processamento em lote no banco de dados...");
+            repository.processDataTableLargestGenerators();
             
-            // Salva os novos registros
-            List<RalieUsinaEmpresaPotenciaGeradaEntity> empreendimentosToSave = new ArrayList<>(empreendimentosMap.values());
-            saveAll(empreendimentosToSave);
+            long processedRecords = repository.count();
+            log.info("Processamento concluído. {} geradoras processadas.", processedRecords);
             
-            log.info("Processamento concluído. {} empreendimentos processados. {} registros ignorados por falta de CodCEG.", 
-                empreendimentosToSave.size(), registrosSemCodCeg);
-        } else {
-            log.warn("Nenhum registro válido encontrado para processamento");
+        } catch (Exception e) {
+            log.error("Erro ao processar dados para a tabela de potência gerada", e);
+            throw new RuntimeException("Falha ao processar dados de potência gerada", e);
         }
     }
     
@@ -113,8 +76,8 @@ public class RalieUsinaEmpresaPotenciaGeradaService {
     }
     
     @Transactional(readOnly = true)
-    public List<RalieUsinaEmpresaPotenciaGeradaEntity> findTop5MaioresGeradores() {
-        log.info("Buscando os 5 maiores geradores de energia");
+    public List<RalieUsinaEmpresaPotenciaGeradaEntity> findTop5LargestGenerators() {
+        log.info("Buscando as 5 maiores geradoras de energia");
         return repository.findTop5ByOrderByPotenciaDesc();
     }
 }

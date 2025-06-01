@@ -243,7 +243,7 @@ public class AneelRalieService {
             csvImportService.importCsv(csvContent);
             log.info("Importação do CSV concluída com sucesso");
 
-            potenciaGeradaService.processarDadosImportados();
+            potenciaGeradaService.processImportedData();
             log.info("Processamento dos dados para a tabela de potência gerada concluído");
             
         } catch (Exception e) {

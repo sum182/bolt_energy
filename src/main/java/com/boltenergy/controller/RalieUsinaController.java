@@ -56,27 +56,27 @@ public class RalieUsinaController {
         return ResponseEntity.ok("Utilizando arquivo RALIE existente: " + filePath);
     }
     
-    @GetMapping("/maiores-geradores")
+    @GetMapping("/maiores-geradoras")
     @Operation(
-        summary = "Listar os 5 maiores geradores de energia",
-        description = "Retorna os 5 empreendimentos com as maiores potências totais, ordenados de forma decrescente"
+        summary = "Listar as 5 maiores geradoras de energia",
+        description = "Retorna as 5 geradoras com as maiores potências totais, ordenadas de forma decrescente"
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Lista dos 5 maiores geradores retornada com sucesso",
+        description = "Lista das 5 maiores geradoras retornada com sucesso",
         content = @Content(
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = RalieUsinaEmpresaPotenciaGeradaDTO.class))
         )
     )
-    public ResponseEntity<List<RalieUsinaEmpresaPotenciaGeradaDTO>> listarMaioresGeradores() {
-        log.info("Recebida requisição para listar os 5 maiores geradores de energia");
+    public ResponseEntity<List<RalieUsinaEmpresaPotenciaGeradaDTO>> listarMaioresGeradoras() {
+        log.info("Recebida requisição para listar as 5 maiores geradoras de energia");
         
-        var geradores = potenciaGeradaService.findTop5MaioresGeradores().stream()
+        var generators = potenciaGeradaService.findTop5LargestGenerators().stream()
             .map(RalieUsinaEmpresaPotenciaGeradaDTO::fromEntity)
             .collect(Collectors.toList());
             
-        log.info("Retornando os 5 maiores geradores de energia");
-        return ResponseEntity.ok(geradores);
+        log.info("Retornando as 5 maiores geradoras de energia");
+        return ResponseEntity.ok(generators);
     }
 }
