@@ -187,9 +187,23 @@ logs/                           # Arquivos de log (criado em tempo de execução
   - Processa os dados para a tabela de potência gerada (`ralie_usina_empresa_potencia_gerada`)
   - Retorna o caminho do arquivo CSV baixado
 
-- **GET** `/api/ralie-usina/potencia-gerada`
-  - Retorna a lista de todas as usinas com suas respectivas potências totais
+- **GET** `/api/ralie-usina/maiores-geradores`
+  - Retorna a lista das maiores geradoras e  suas respectivas potências totais
   - Os dados são obtidos da tabela `ralie_usina_empresa_potencia_gerada`
+  - Resposta em formato JSON contendo: `id`, `codCeg`, `nomEmpreendimento` e `potencia`
+  - Exemplo de resposta:
+    ```json
+    [
+      {
+        "id": 1,
+        "codCeg": "A-001",
+        "nomEmpreendimento": "Usina Solar Exemplo",
+        "potencia": 1500.75
+      },
+      ...
+    ]
+    ```
+
 
 
 ### Test Endpoints
@@ -360,7 +374,7 @@ ralie:
 - O agendamento pode ser habilitado/desabilitado conforme necessário
 
 
-### 📊 Monitoramento
+### 📄 Logs
 
 O endpoint de download inclui logs detalhados que ajudam a monitorar o desempenho:
 

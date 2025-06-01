@@ -1,8 +1,12 @@
 package com.boltenergy.controller;
 
+import com.boltenergy.model.dto.RalieUsinaEmpresaPotenciaGeradaDTO;
 import com.boltenergy.service.AneelRalieService;
+import com.boltenergy.service.RalieUsinaEmpresaPotenciaGeradaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -25,6 +31,7 @@ import java.io.File;
 public class RalieUsinaController {
 
     private final AneelRalieService aneelRalieService;
+    private final RalieUsinaEmpresaPotenciaGeradaService potenciaGeradaService;
 
     @GetMapping("/download-csv")
     @Operation(
@@ -47,5 +54,29 @@ public class RalieUsinaController {
         
         log.info("Utilizando arquivo RALIE existente: {}", filePath);
         return ResponseEntity.ok("Utilizando arquivo RALIE existente: " + filePath);
+    }
+    
+    @GetMapping("/maiores-geradores")
+    @Operation(
+        summary = "Listar maiores geradores de energia",
+        description = "Retorna a lista de todos os empreendimentos com suas respectivas potências totais"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Lista de maiores geradores retornada com sucesso",
+        content = @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = RalieUsinaEmpresaPotenciaGeradaDTO.class))
+        )
+    )
+    public ResponseEntity<List<RalieUsinaEmpresaPotenciaGeradaDTO>> listarMaioresGeradores() {
+        log.info("Recebida requisição para listar os maiores geradores de energia");
+        
+        var geradores = potenciaGeradaService.findAll().stream()
+            .map(RalieUsinaEmpresaPotenciaGeradaDTO::fromEntity)
+            .collect(Collectors.toList());
+            
+        log.info("Retornando {} maiores geradores de energia", geradores.size());
+        return ResponseEntity.ok(geradores);
     }
 }
