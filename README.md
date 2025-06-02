@@ -210,58 +210,39 @@ logs/
 
 
 
-## 📊 Importação de Dados RALIE
+## 🚀 Otimizações Implementadas
 
-O sistema agora possui um mecanismo avançado para importação de arquivos CSV do RALIE, com as seguintes características:
+O sistema foi otimizado para lidar com download e importação de arquivos grandes de forma eficiente e confiável, com as seguintes características:
 
-### 🛠️ Funcionalidades de Importação
+1. **Processamento de Dados**
+   - Leitura em streaming para arquivos grandes
+   - Processamento em lote para melhor desempenho
+   - Processamento assíncrono e não-bloqueante
+   - Buffer otimizado (1MB) para melhor desempenho
 
-1. **Suporte a Múltiplas Codificações**
+2. **Suporte a Múltiplas Codificações**
    - Detecção automática de codificação (UTF-8, ISO-8859-1, Windows-1252)
    - Correção automática de caracteres especiais
    - Tratamento robusto de diferentes formatos de arquivo
 
-2. **Processamento Eficiente**
-   - Leitura em streaming para arquivos grandes
-   - Processamento em lote para melhor desempenho
-   - Validação de dados durante a importação
-
 3. **Tratamento de Erros**
-   - Logs detalhados para diagnóstico
-   - Continuação do processamento mesmo com linhas inválidas
-   - Relatório de erros ao final do processo
-
-4. **Persistência**
-   - Armazenamento seguro no banco de dados
-   - Atualização em lote para melhor desempenho
-   - Rastreamento de metadados de importação
-
-## 🚀 Otimização para Download de Arquivos
-
-Foram implementadas algumas otimizações para lidar com o download de arquivos grandes de forma eficiente e confiável:
-
-### 🛠️ Otimizações Implementadas
-
-1. **Streaming de Dados**
-   - Processamento do arquivo em blocos para evitar consumo excessivo de memória
-   - Processamento assíncrono e não-bloqueante
-   - Buffer otimizado para melhor desempenho
-
-2. **Tratamento de Erros**
    - Timeout de conexão: 5 minutos (configurável)
    - Timeout total de download: 10 minutos
-   - Tratamento específico para diferentes tipos de falhas
+   - Continuação do processamento mesmo com linhas inválidas
    - Logs detalhados para diagnóstico de problemas
 
-3. **Segurança e Confiabilidade**
+4. **Segurança e Confiabilidade**
    - Uso de arquivos temporários durante o download
    - Limpeza automática em caso de falha
    - Verificação de integridade do arquivo
-
-4. **Otimizações de Desempenho**
-   - Buffer de rede otimizado (1MB)
    - Timeout de conexão configurável
    - Suporte a compressão HTTP
+
+5. **Persistência**
+   - Armazenamento seguro no banco de dados
+   - Atualização em lote para melhor desempenho
+   - Rastreamento de metadados de importação
+   - Validação de dados durante a importação
 
 ### ⚙️ Configurações Personalizáveis
 
@@ -381,6 +362,20 @@ Para executar os testes:
 ```bash
 mvn test
 ```
+
+## 📡 Collections do Postman
+
+O projeto inclui collections do Postman para facilitar os testes da API. As collections estão localizadas no diretório `postman/`:
+
+- `aneel.postman_collection.json`: Collection para os endpoints relacionados à integração com a ANEEL
+- `bolt_energi_api.postman_collection.json`: Collection principal com todos os endpoints da API
+
+### Como importar as collections
+
+1. Abra o Postman
+2. Clique em "Import" no canto superior esquerdo
+3. Selecione os arquivos `.json` do diretório `postman/`
+4. As collections estarão disponíveis na aba "Collections"
 
 ## 🤖 Inteligência Artificial - Windsurf
 

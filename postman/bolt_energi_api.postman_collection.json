@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "b8898265-3b47-4847-a3e9-a4639d5fc3da",
+		"name": "bolt_energi_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19420607"
+	},
+	"item": [
+		{
+			"name": "swagger",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/v3/api-docs",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"v3",
+						"api-docs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "hello",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/api/test/hello",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"api",
+						"test",
+						"hello"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "google",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/api/test/google",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"api",
+						"test",
+						"google"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "google async",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/api/test/google/async",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"api",
+						"test",
+						"google",
+						"async"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "actuator",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/actuator",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"actuator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "actuator-health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/actuator/health",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"actuator",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ralie-usina - process-generators-table",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/api/ralie-usina/processa-maiores-geradoras",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"api",
+						"ralie-usina",
+						"processa-maiores-geradoras"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ralie-usina - download",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/api/ralie-usina/download-csv",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"api",
+						"ralie-usina",
+						"download-csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ralie-usina - maiores-geradoras",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bolt_app_raile}}/api/ralie-usina/maiores-geradores",
+					"host": [
+						"{{bolt_app_raile}}"
+					],
+					"path": [
+						"api",
+						"ralie-usina",
+						"maiores-geradores"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
