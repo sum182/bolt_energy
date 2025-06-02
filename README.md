@@ -115,8 +115,18 @@ src/
         ├── controller/
         │   ├── RalieUsinaControllerTest.java
         │   └── TestControllerTest.java
+        ├── integration/
+        │   ├── AneelRalieServiceIT.java
+        │   └── RalieUsinaCsvImportServiceIT.java
         └── service/
-            └── AneelRalieServiceTest.java
+            ├── AneelRalieServiceTest.java
+            ├── GoogleServiceTest.java
+            ├── HttpServiceTest.java
+            ├── RalieMetadataDbServiceTest.java
+            ├── RalieUsinaCsvImportServiceTest.java
+            ├── RalieUsinaEmpresaPotenciaGeradaServiceTest.java
+            └── scheduler/
+                └── RalieDownloadSchedulerTest.java
 
 /downloads/
   └── ralie_metadata.json
